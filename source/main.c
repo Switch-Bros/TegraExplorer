@@ -71,7 +71,7 @@ volatile nyx_storage_t *nyx_str = (nyx_storage_t *)NYX_STORAGE_ADDR;
 #define RCM_PAYLOAD_ADDR    (EXT_PAYLOAD_ADDR + ALIGN(PATCHED_RELOC_SZ, 0x10))
 #define COREBOOT_END_ADDR   0xD0000000
 #define CBFS_DRAM_EN_ADDR   0x4003e000
-#define  CBFS_DRAM_MAGIC    0x4452414D // "DRAM"
+#define CBFS_DRAM_MAGIC     0x4452414D // "DRAM"
 
 static void *coreboot_addr;
 
@@ -105,7 +105,7 @@ int launch_payload(char *path)
 		FIL fp;
 		if (f_open(&fp, path, FA_READ))
 		{
-			EPRINTFARGS("Payload file is missing!\n(%s)", path);
+			EPRINTFARGS("Payload fehlt!\n(%s)", path);
 			sd_unmount();
 
 			return 1;
@@ -237,7 +237,7 @@ void ipl_main()
 	heap_init(IPL_HEAP_START);
 
 #ifdef DEBUG_UART_PORT
-	uart_send(DEBUG_UART_PORT, (u8 *)"hekate: Hello!\r\n", 16);
+	uart_send(DEBUG_UART_PORT, (u8 *)"hekate: Hallo!\r\n", 16);
 	uart_wait_idle(DEBUG_UART_PORT, UART_TX_IDLE);
 #endif
 
@@ -250,8 +250,10 @@ void ipl_main()
 	TConf.minervaEnabled = !minerva_init();
 	TConf.FSBuffSize = (TConf.minervaEnabled) ? 0x800000 : 0x10000;
 
-	if (!TConf.minervaEnabled) //!TODO: Add Tegra210B01 support to minerva.
+	// Train DRAM and switch to max frequency.
+	if (TConf.minervaEnabled) //!TODO: Add Tegra210B01 support to minerva.
 		h_cfg.errors |= ERR_LIBSYS_MTC;
+	minerva_change_freq(FREQ_1600);
 
 	display_init();
 
@@ -265,7 +267,6 @@ void ipl_main()
 
 	// Overclock BPMP.
 	bpmp_clk_rate_set(BPMP_CLK_DEFAULT_BOOST);
-	minerva_change_freq(FREQ_800);
 
 	emummc_load_cfg();
 	// Ignore whether emummc is enabled.
@@ -276,27 +277,50 @@ void ipl_main()
 	TConf.pkg1ID = "Unk";
 
 	hidInit();
+
+	//gfx_clearscreen();
+	//Vector_t a = vecFromArray(testEntries, 9, sizeof(MenuEntry_t));
+	//u32 res = newMenu(&a, 0, 40, 5, testAdd, NULL);
+
+	//gfx_clearscreen();
+	//DrawError(newErrCode(1));
+
+	// TODO: Write exceptions in err.c and check them here
+
 	_show_errors();
+
 	gfx_clearscreen();
-
-	int res = -1;
-
-	if (btn_read() & BTN_VOL_DOWN || DumpKeys())
-		res = GetKeysFromFile("sd:/switch/prod.keys");
-
-	TConf.keysDumped = (res > 0) ? 0 : 1;
-
-	if (res > 0)
-		DrawError(newErrCode(TE_ERR_KEYDUMP_FAIL));
 	
-	if (TConf.keysDumped)
-		SetKeySlots();
-	
-	if (res == 0)
-		hidWait();
 
-	if (FileExists("sd:/startup.te"))
+	if (FileExists("sd:/switch/prod.keys")){
+		int res = -1;
+
+		if (btn_read() & BTN_VOL_DOWN || DumpKeys())
+			res = GetKeysFromFile("sd:/switch/prod.keys");
+
+		TConf.keysDumped = (res > 0) ? 0 : 1;
+
+		if (res > 0)
+			DrawError(newErrCode(TE_ERR_KEYDUMP_FAIL));
+		
+		if (TConf.keysDumped)
+			SetKeySlots();
+	}
+
+	if (FileExists("sd:/SwitchBros_BasisPaket/switch/switchbros-updater/update.te"))
+		RunScript("sd:/SwitchBros_BasisPaket/switch/switchbros-updater", newFSEntry("update.te"));
+	else if (FileExists("sd:/switch/switchbros-updater/update.te"))
+		RunScript("sd:/switch/switchbros-updater", newFSEntry("update.te"));
+	else if (FileExists("sd:/SwitchBros_BasisPaket/switch/switchbrosupdater/startup.te"))
+		RunScript("sd:/SwitchBros_BasisPaket/switch/switchbrosupdater", newFSEntry("startup.te"));
+	else if (FileExists("sd:/startup.te"))
 		RunScript("sd:/", newFSEntry("startup.te"));
+	// else 
+	// 	{
+	// 		gfx_printf("\n\nStartup script nicht gefunden.\nBitte downloade das SwitchBros_BasisPaket neu herunter und installiere es manuell\n\nPower-Taste druecken fuer Neustart...");
+	// 		hidWait()->buttons;
+	// 		launch_payload("sd:/SwitchBros_BasisPaket/payload.bin");
+	// 	}
 
 	EnterMainMenu();
 

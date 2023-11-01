@@ -47,41 +47,40 @@ enum {
     MainExit = 0,
     #endif
     MainPowerOff,
-    MainRebootRCM,
-    MainRebootNormal,
     MainRebootHekate,
-    MainRebootAMS,
+    MainReloadTE,
     MainScripts,
 };
 
 MenuEntry_t mainMenuEntries[] = {
     #ifndef SCRIPT_ONLY
-    [MainExplore] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "-- Explore --"},
-    [MainBrowseSd] = {.optionUnion = COLORTORGB(COLOR_GREEN), .name = "Browse SD"},
+    [MainExplore] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "-- Explorer --"},
+    [MainBrowseSd] = {.optionUnion = COLORTORGB(COLOR_GREEN), .name = "SD durchsuchen"},
     [MainMountSd] = {.optionUnion = COLORTORGB(COLOR_YELLOW)}, // To mount/unmount the SD
-    [MainBrowseEmmc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "Browse EMMC"},
-    [MainBrowseEmummc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "Browse EMUMMC"},
+    [MainBrowseEmmc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "EMMC durchsuchen"},
+    [MainBrowseEmummc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "EMUMMC durchsuchen"},
     [MainTools] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Tools --"},
-    [MainPartitionSd] = {.optionUnion = COLORTORGB(COLOR_ORANGE), .name = "Partition the sd"},
-    [MainViewKeys] = {.optionUnion = COLORTORGB(COLOR_YELLOW), .name = "View dumped keys"},
-    [MainViewCredits] = {.optionUnion = COLORTORGB(COLOR_YELLOW), .name = "Credits"},
-    [MainExit] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Exit --"},
+    [MainPartitionSd] = {.optionUnion = COLORTORGB(COLOR_ORANGE), .name = "SD-Karte partitionieren"},
+    [MainViewKeys] = {.optionUnion = COLORTORGB(COLOR_YELLOW), .name = "Ausgelesene Keys anschauen"},
+    [MainViewCredits] = {.optionUnion = COLORTORGB(COLOR_YELLOW), .name = "Ueber"},
+    [MainExit] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Beenden --"},
     #else 
-    [MainExit] = {.optionUnion = COLORTORGB(COLOR_WHITE), .name = "\n-- Exit --"},
+    [MainExit] = {.optionUnion = COLORTORGB(COLOR_WHITE), .name = "\n-- Beenden --"},
     #endif
-    [MainPowerOff] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Power off"},
-    [MainRebootRCM] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to RCM"},
-    [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot normally"},
-    [MainRebootHekate] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to bootloader/update.bin"},
-    [MainRebootAMS] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to atmosphere/reboot_payload.bin"},
-    [MainScripts] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Scripts --"}
+    [MainPowerOff] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Ausschalten"},
+    // [MainRebootAMS] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to hekate"},
+    // [MainRebootRCM] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to RCM"},
+    // [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot normally"},
+    [MainRebootHekate] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in hekate"},
+    [MainReloadTE] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "TegraExplorer neu laden"},
+    [MainScripts] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Scripte --"}
 };
 
 void HandleSD(){
     gfx_clearscreen();
     TConf.curExplorerLoc = LOC_SD;
     if (!sd_mount() || sd_get_card_removed()){
-        gfx_printf("Sd is not mounted!");
+        gfx_printf("SD-Karte ist nicht gemounted!");
         hidWait();
     }
     else
@@ -107,7 +106,7 @@ void ViewKeys(){
     PrintKey(dumpedKeys.master_key, AES_128_KEY_SIZE);
     gfx_printf("\nHeader key:   ");
     PrintKey(dumpedKeys.header_key, AES_128_KEY_SIZE * 2);
-    gfx_printf("\nSave mac key: ");
+    gfx_printf("\nSichere mac key: ");
     PrintKey(dumpedKeys.save_mac_key, AES_128_KEY_SIZE);
 
     u8 fuseCount = 0;
@@ -116,17 +115,17 @@ void ViewKeys(){
             fuseCount++;
     }
 
-    gfx_printf("\n\nPkg1 ID: '%s'\nFuse count: %d", TConf.pkg1ID, fuseCount);
+    gfx_printf("\n\nPkg1 ID: '%s' (kb %d)\nFuse Zaehler: %d", TConf.pkg1ID, TConf.pkg1ver, fuseCount);
 
     hidWait();
 }
 
 void ViewCredits(){
     gfx_clearscreen();
-    gfx_printf("\nTegraexplorer v%d.%d.%d\nBy SuchMemeManySkill\n\nBased on Lockpick_RCM & Hekate, from shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF);
+    gfx_printf("\nTegraexplorer v%d.%d.%d.%d\nVon SuchMemeManySkill (Uebersetzt von Switch Bros.)\n\nBasierend auf Lockpick_RCM & Hekate, von shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF, LP_VER_SB);
 
     if (hidRead()->r)
-        gfx_printf("%k\"I'm not even sure if it works\" - meme", COLOR_ORANGE);
+        gfx_printf("%k\"Ich bin mir nicht mal sicher ob es funktioniert\" - meme", COLOR_ORANGE);
 
     hidWait();
 }
@@ -137,6 +136,10 @@ extern int launch_payload(char *path);
 
 void RebootToAMS(){
     launch_payload("sd:/atmosphere/reboot_payload.bin");
+}
+
+void ReloadTE(){
+    launch_payload("sd:/bootloader/payloads/TegraExplorer.bin");
 }
 
 void RebootToHekate(){
@@ -161,11 +164,12 @@ menuPaths mainMenuPaths[] = {
     [MainViewKeys] = ViewKeys,
     [MainViewCredits] = ViewCredits,
     #endif
-    [MainRebootAMS] = RebootToAMS,
-    [MainRebootHekate] = RebootToHekate,
-    [MainRebootRCM] = reboot_rcm,
     [MainPowerOff] = power_off,
-    [MainRebootNormal] = reboot_normal,
+    [MainRebootHekate] = RebootToHekate,
+    // [MainRebootAMS] = RebootToAMS,
+    // [MainRebootRCM] = reboot_rcm,
+    // [MainRebootNormal] = reboot_normal,
+    [MainReloadTE] = ReloadTE
 };
 
 void EnterMainMenu(){
@@ -177,7 +181,7 @@ void EnterMainMenu(){
         #ifndef SCRIPT_ONLY
         // -- Explore --
         mainMenuEntries[MainBrowseSd].hide = !sd_mounted;
-        mainMenuEntries[MainMountSd].name = (sd_mounted) ? "Unmount SD" : "Mount SD";
+        mainMenuEntries[MainMountSd].name = (sd_mounted) ? "SD auswerfen" : "SD einbinden";
         mainMenuEntries[MainBrowseEmummc].hide = (!emu_cfg.enabled || !sd_mounted);
 
         // -- Tools --
@@ -185,9 +189,9 @@ void EnterMainMenu(){
         mainMenuEntries[MainViewKeys].hide = !TConf.keysDumped;
 
         // -- Exit --
-        mainMenuEntries[MainRebootAMS].hide = (!sd_mounted || !FileExists("sd:/atmosphere/reboot_payload.bin"));
+        // mainMenuEntries[MainRebootAMS].hide = (!sd_mounted || !FileExists("sd:/atmosphere/reboot_payload.bin"));
         mainMenuEntries[MainRebootHekate].hide = (!sd_mounted || !FileExists("sd:/bootloader/update.bin"));
-        mainMenuEntries[MainRebootRCM].hide = h_cfg.t210b01;
+        // mainMenuEntries[MainRebootRCM].hide = h_cfg.t210b01;
         #endif
         // -- Scripts --
         #ifndef INCLUDE_BUILTIN_SCRIPTS

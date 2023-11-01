@@ -33,6 +33,7 @@ typedef struct {
         u16 optionUnion;
     };
     const char *pkg1ID;
+    u8 pkg1ver;
     char *scriptCWD;
 } TConf_t;
 
