@@ -62,6 +62,7 @@ Other awesome people:
 - Emmo
 - Gengar
 - Einso
+- Jeffv
 
 ## Screenshots
 
