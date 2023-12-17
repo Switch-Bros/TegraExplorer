@@ -125,7 +125,7 @@ void ViewKeys(){
 
 void ViewCredits(){
     gfx_clearscreen();
-    gfx_printf("\nTegraexplorer v%d.%d.%d.%d\nVon SuchMemeManySkill (Uebersetzt von Switch Bros.)\n\nBasierend auf Lockpick_RCM & Hekate, von shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF);
+    gfx_printf("\nTegraexplorer %d.%d.%d\nVon SuchMemeManySkill (Uebersetzt von Switch Bros.)\n\nBasierend auf Lockpick_RCM & Hekate, von shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF);
 
     if (hidRead()->r)
         gfx_printf("%k\"Ich bin mir nicht mal sicher ob es funktioniert\" - meme", COLOR_ORANGE);
