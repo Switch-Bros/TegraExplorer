@@ -1033,10 +1033,12 @@ static int _sdmmc_execute_cmd_inner(sdmmc_t *sdmmc, sdmmc_cmd_t *cmd, sdmmc_req_
 	}
 
 	int result = _sdmmc_wait_response(sdmmc);
-#ifdef ERROR_EXTRA_PRINTING
 	if (!result)
+	{
+#ifdef ERROR_EXTRA_PRINTING
 		EPRINTF("SDMMC: Transfer timeout!");
 #endif
+	}
 DPRINTF("rsp(%d): %08X, %08X, %08X, %08X\n", result,
 		sdmmc->regs->rspreg0, sdmmc->regs->rspreg1, sdmmc->regs->rspreg2, sdmmc->regs->rspreg3);
 	if (result)
@@ -1045,18 +1047,22 @@ DPRINTF("rsp(%d): %08X, %08X, %08X, %08X\n", result,
 		{
 			sdmmc->expected_rsp_type = cmd->rsp_type;
 			result = _sdmmc_cache_rsp(sdmmc, sdmmc->rsp, 0x10, cmd->rsp_type);
-#ifdef ERROR_EXTRA_PRINTING
 			if (!result)
+			{
+#ifdef ERROR_EXTRA_PRINTING
 				EPRINTF("SDMMC: Unknown response type!");
 #endif
+			}
 		}
 		if (req && result)
 		{
 			result = _sdmmc_update_dma(sdmmc);
-#ifdef ERROR_EXTRA_PRINTING
 			if (!result)
+			{
+#ifdef ERROR_EXTRA_PRINTING
 				EPRINTF("SDMMC: DMA Update failed!");
 #endif
+			}
 		}
 	}
 
@@ -1079,10 +1085,12 @@ DPRINTF("rsp(%d): %08X, %08X, %08X, %08X\n", result,
 		if (cmd->check_busy || req)
 		{
 			result = _sdmmc_wait_card_busy(sdmmc);
-#ifdef ERROR_EXTRA_PRINTING
 			if (!result)
+			{
+#ifdef ERROR_EXTRA_PRINTING
 				EPRINTF("SDMMC: Busy timeout!");
 #endif
+			}
 			return result;
 		}
 	}

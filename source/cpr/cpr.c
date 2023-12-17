@@ -93,9 +93,6 @@ int listdir(char *path, u32 hos_folder)
     u32 dirLength = 0;
     static FILINFO fno;
 
-    u32 x, y;
-    gfx_con_getpos(&x, &y);
-
     // Open directory.
     res = f_opendir(&dir, path);
     if (res != FR_OK)
@@ -119,7 +116,7 @@ int listdir(char *path, u32 hos_folder)
         memcpy(&path[dirLength], "/", 1);
         memcpy(&path[dirLength + 1], fno.fname, strlen(fno.fname) + 1);
         // gfx_printf("THING: %s\n", fno.fname);
-        // gfx_printf("Pfad: %s\n", dir);
+        // gfx_printf("Path: %s\n", dir);
         // Is it a directory?
         if (fno.fattrib & AM_DIR)
         {
@@ -133,10 +130,6 @@ int listdir(char *path, u32 hos_folder)
                 strcmp(fno.fname, ".fseventsd") == 0 ||
                 strcmp(fno.fname, ".TemporaryItems") == 0)
             {
-                gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-                BoxRestOfScreen();
-
-                gfx_con_setpos(x, y);
                 _FolderDelete(path);
             }
 
@@ -156,10 +149,6 @@ int listdir(char *path, u32 hos_folder)
                 strcmp(fno.fname, ".TemporaryItems") == 0 ||
                 _StartsWith(fno.fname, "._"))
             {
-                gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-                BoxRestOfScreen();
-
-                gfx_con_setpos(x, y);
                 _DeleteFileSimple(path);
             }
         }
@@ -175,9 +164,6 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
     DIR dir;
     u32 dirLength = 0;
     static FILINFO fno;
-
-    u32 x, y;
-    gfx_con_getpos(&x, &y);
 
     if (check_first_run)
     {
@@ -213,7 +199,7 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
             break;
 
         // Skip official Nintendo dir if started from root.
-        if (!hos_folder && (!strcmp(fno.fname, "Nintendo") || !strcmp(fno.fname, "roms") || !strcmp(fno.fname, "contents") || !strcmp(fno.fname, "erpt_reports") || !strcmp(fno.fname, "fatal_reports") || !strcmp(fno.fname, "fatal_errors") || !strcmp(fno.fname, "crash_reports")))
+        if (!hos_folder && !strcmp(fno.fname, "Nintendo"))
             continue;
 
         // Set new directory or file.
@@ -224,12 +210,7 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
         if (fno.fattrib & AM_ARC)
         {
             *total = *total + 1;
-            // gfx_printf("%s\n", path);
-            gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-            BoxRestOfScreen();
-
-            gfx_con_setpos(x, y);
-            // gfx_clearscreen();
+            gfx_printf("%s\n", path);
             f_chmod(path, 0, AM_ARC);
         }
 
@@ -240,12 +221,7 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
             if (hos_folder && !strcmp(fno.fname + strlen(fno.fname) - 4, ".nca"))
             {
                 *total = *total + 1;
-                // gfx_printf("%s\n", path);
-                gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-                BoxRestOfScreen();
-
-                gfx_con_setpos(x, y);
-                // gfx_clearscreen();
+                gfx_printf("%s\n", path);
                 f_chmod(path, AM_ARC, AM_ARC);
             }
 
@@ -270,63 +246,29 @@ void m_entry_fixArchiveBit(u32 type)
     u32 total = 0;
     if (sd_mount())
     {
-        // strcpy(path, "/");
-        // strcpy(label, "SD Card");
-        // gfx_printf("Durchlaufe \"%s\"..\nDas kann einige Zeit dauern...\n\n", label);
-        // _fix_attributes(path, &total, type, type);
+        switch (type)
+        {
+        case 0:
+            strcpy(path, "/");
+            strcpy(label, "SD Card");
+            break;
+        case 1:
+        default:
+            strcpy(path, "/Nintendo");
+            strcpy(label, "Nintendo folder");
+            break;
+        }
 
-        strcpy(path, "atmosphere");
-        strcpy(label, "atmosphere");
-        gfx_printf("Attribute reparieren. Das kann einige Zeit dauern...", label);
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
+        gfx_printf("Traversing all %s files!\nThis may take some time...\n\n", label);
         _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "bootloader");
-        strcpy(label, "bootloader");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "switch");
-        strcpy(label, "switch");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "config");
-        strcpy(label, "config");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "firmware");
-        strcpy(label, "firmware");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "emummc");
-        strcpy(label, "emummc");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
+        gfx_printf("%kTotal archive bits cleared: %d!%k", 0xFF96FF00, total, 0xFFCCCCCC);
     }
-
-    gfx_clearscreen();
-    gfx_printf("%kAnzahl geloeschter Archiv Bits: %d!%k", 0xFF96FF00, total, 0xFFCCCCCC);
 }
 
 void m_entry_fixAIOUpdate()
 {
     gfx_clearscreen();
-    gfx_printf("\n\n-- Behebe fehlerhaftes AIO-switch-updater Update.\n\n");
+    gfx_printf("\n\n-- Fix broken Switch-AiO-Updater update.\n\n");
 
     char *aio_fs_path = CpyStr("sd:/atmosphere/fusee-secondary.bin.aio");
     char *aio_p_path = CpyStr("sd:/sept/payload.bin.aio");
@@ -338,7 +280,7 @@ void m_entry_fixAIOUpdate()
 
     if (FileExists(aio_fs_path))
     {
-        gfx_printf("Von AIO aktualisierte fusee-secondary Datei entdeckt -> ersetze Original\n\n");
+        gfx_printf("Detected aio updated fusee-secondary file -> replacing original\n\n");
         if (FileExists(o_fs_path))
         {
             _DeleteFileSimple(o_fs_path);
@@ -350,7 +292,7 @@ void m_entry_fixAIOUpdate()
 
     if (FileExists(aio_p_path))
     {
-        gfx_printf("Von AIO aktualisierte payload Datei entdeckt -> ersetze Original\n\n");
+        gfx_printf("Detected aio updated paload file -> replacing original\n\n");
         if (FileExists(o_p_path))
         {
             _DeleteFileSimple(o_p_path);
@@ -362,7 +304,7 @@ void m_entry_fixAIOUpdate()
 
     if (FileExists(aio_strt_path))
     {
-        gfx_printf("Von AIO aktualisierte stratosphere Datei entdeckt -> ersetze Original\n\n");
+        gfx_printf("Detected aio updated stratosphere file -> replacing original\n\n");
         if (FileExists(o_strt_path))
         {
             _DeleteFileSimple(o_strt_path);
@@ -376,7 +318,7 @@ void m_entry_fixAIOUpdate()
 void m_entry_fixClingWrap()
 {
     gfx_clearscreen();
-    gfx_printf("\n\n-- Repariere ClingWrap.\n\n");
+    gfx_printf("\n\n-- Fixing ClingWrap.\n\n");
     char *bpath = CpyStr("sd:/_b0otloader");
     char *bopath = CpyStr("sd:/bootloader");
     char *kpath = CpyStr("sd:/atmosphere/_k1ps");
@@ -396,7 +338,7 @@ void m_entry_fixClingWrap()
         {
             DrawError(newErrCode(res));
         }
-        gfx_printf("-- Bootloader repariert\n");
+        gfx_printf("-- Fixed Bootloader\n");
     }
 
     if (FileExists(kpath))
@@ -410,7 +352,7 @@ void m_entry_fixClingWrap()
         {
             DrawError(newErrCode(res));
         }
-        gfx_printf("-- kips repariert\n");
+        gfx_printf("-- Fixed kips\n");
     }
 
     if (FileExists(ppath))
@@ -420,7 +362,7 @@ void m_entry_fixClingWrap()
             _DeleteFileSimple(popath);
         }
         _RenameFileSimple(ppath, popath);
-        gfx_printf("-- patches.ini repariert\n");
+        gfx_printf("-- Fixed patches.ini\n");
     }
 
     free(bpath);
@@ -436,7 +378,7 @@ void _deleteTheme(char *basePath, char *folderId)
     char *path = CombinePaths(basePath, folderId);
     if (FileExists(path))
     {
-        gfx_printf("-- Theme gefunden: %s\n", path);
+        gfx_printf("-- Theme found: %s\n", path);
         FolderDelete(path);
     }
     free(path);
@@ -445,7 +387,7 @@ void _deleteTheme(char *basePath, char *folderId)
 void m_entry_deleteInstalledThemes()
 {
     gfx_clearscreen();
-    gfx_printf("\n\n-- Loesche installierte Themes.\n\n");
+    gfx_printf("\n\n-- Deleting installed themes.\n\n");
     _deleteTheme("sd:/atmosphere/contents", "0100000000001000");
     _deleteTheme("sd:/atmosphere/contents", "0100000000001007");
     _deleteTheme("sd:/atmosphere/contents", "0100000000001013");
@@ -454,7 +396,7 @@ void m_entry_deleteInstalledThemes()
 void m_entry_deleteBootFlags()
 {
     gfx_clearscreen();
-    gfx_printf("\n\n-- Aktivierte sysmodule beim Systemstart ausschalten.\n\n");
+    gfx_printf("\n\n-- Disabling automatic sysmodule startup.\n\n");
     char *storedPath = CpyStr("sd:/atmosphere/contents");
     int readRes = 0;
     Vector_t fileVec = ReadFolder(storedPath, &readRes);
@@ -475,7 +417,7 @@ void m_entry_deleteBootFlags()
 
             if (FileExists(flagPath))
             {
-                gfx_printf("Loesche: %s\n", flagPath);
+                gfx_printf("Deleting: %s\n", flagPath);
                 _DeleteFileSimple(flagPath);
             }
             free(flagPath);
@@ -497,22 +439,22 @@ void m_entry_fixMacSpecialFolders()
 void m_entry_stillNoBootInfo()
 {
     gfx_clearscreen();
-    gfx_printf("\n\n-- Meine Switch startet immer noch nicht.\n\n");
+    gfx_printf("\n\n-- My switch still does not boot.\n\n");
 
-    gfx_printf("%kSteckt eine Spiel-Cardrige im Slot?\n", COLOR_WHITE);
-    gfx_printf("Entferne sie und starte neu.\n\n");
+    gfx_printf("%kDo you have a gamecard inserted?\n", COLOR_WHITE);
+    gfx_printf("Try taking it out and reboot.\n\n");
 
-    gfx_printf("%kHast du vor kurzem Atmosphere/SwitchBros. aktualisiert?\n", COLOR_WHITE);
-    gfx_printf("Stecke die SD-Karte in deinen PC, loesche 'atmosphere', 'bootloader' & 'sept' Ordner, lade dein bevorzugtes CFW runter und pack die Dateien auf die SD-Karte.\nEinfacher ist es das SwitchBros. Paket herunterzuladen, die SD-Karte in den PC stecken, und dann 'NUR' das 'SwitchBros-SD-Werkzeug.bat' auszufuehren.\n\n");
+    gfx_printf("%kDid you recently update Atmosphere/DeepSea?\n", COLOR_WHITE);
+    gfx_printf("Insert your sdcard into a computer, delete 'atmosphere', 'bootloader' & 'sept', download your preffered CFW and put the files back on your switch.\n\n");
 
-    gfx_printf("%kHast du eine neue SD-Karte gekauft?\n", COLOR_WHITE);
-    gfx_printf("Vergewissere dich das es keine 'fake' Karte ist.\n\n");
+    gfx_printf("%kDid you just buy a new SD-card?\n", COLOR_WHITE);
+    gfx_printf("Make sure its not a fake card.\n\n");
 }
 
 void m_entry_ViewCredits()
 {
     gfx_clearscreen();
-    gfx_printf("\nAllgemeiner Problem Loeser v%d.%d.%d.%d\nVon Team Neptune - (Uebersetzt von Switch Bros.)\n\nBasierend auf TegraExplorer von SuchMemeManySkill,\nLockpick_RCM & Hekate, von shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF, LP_VER_SB);
+    gfx_printf("\nCommon Problem Resolver v%d.%d.%d\nBy Team Neptune\n\nBased on TegraExplorer by SuchMemeManySkill,\nLockpick_RCM & Hekate, from shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF);
 }
 
 void m_entry_fixAll()

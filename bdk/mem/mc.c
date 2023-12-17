@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 naehrwert
- * Copyright (c) 2018-2021 CTCaer
+ * Copyright (c) 2018-2020 CTCaer
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory_map.h>
 #include <mem/mc.h>
 #include <soc/t210.h>
 #include <soc/clock.h>
@@ -125,13 +124,13 @@ void mc_config_carveout()
 	MC(MC_SECURITY_CARVEOUT5_CFG0) = 0x8F;
 }
 
-void mc_enable_ahb_redirect(bool full_aperture)
+void mc_enable_ahb_redirect()
 {
 	// Enable ARC_CLK_OVR_ON.
 	CLOCK(CLK_RST_CONTROLLER_LVL2_CLK_GATE_OVRD) = (CLOCK(CLK_RST_CONTROLLER_LVL2_CLK_GATE_OVRD) & 0xFFF7FFFF) | 0x80000;
 	//MC(MC_IRAM_REG_CTRL) &= 0xFFFFFFFE;
 	MC(MC_IRAM_BOM) = 0x40000000;
-	MC(MC_IRAM_TOM) = full_aperture ? DRAM_START : 0x4003F000;
+	MC(MC_IRAM_TOM) = 0x4003F000;
 }
 
 void mc_disable_ahb_redirect()

@@ -290,39 +290,14 @@ void ipl_main()
 	_show_errors();
 
 	gfx_clearscreen();
-	
-
-	if (FileExists("sd:/switch/prod.keys")){
-		int res = -1;
-
-		if (btn_read() & BTN_VOL_DOWN || DumpKeys())
-			res = GetKeysFromFile("sd:/switch/prod.keys");
-
-		TConf.keysDumped = (res > 0) ? 0 : 1;
-
-		if (res > 0)
-			DrawError(newErrCode(TE_ERR_KEYDUMP_FAIL));
-		
-		if (TConf.keysDumped)
-			SetKeySlots();
-	}
 
 	if (FileExists("sd:/SwitchBros_BasisPaket/switch/switchbros-updater/update.te"))
 		RunScript("sd:/SwitchBros_BasisPaket/switch/switchbros-updater", newFSEntry("update.te"));
-	else if (FileExists("sd:/switch/switchbros-updater/update.te"))
-		RunScript("sd:/switch/switchbros-updater", newFSEntry("update.te"));
-	else if (FileExists("sd:/SwitchBros_BasisPaket/switch/switchbrosupdater/startup.te"))
-		RunScript("sd:/SwitchBros_BasisPaket/switch/switchbrosupdater", newFSEntry("startup.te"));
-	else if (FileExists("sd:/startup.te"))
-		RunScript("sd:/", newFSEntry("startup.te"));
-	// else 
-	// 	{
-	// 		gfx_printf("\n\nStartup script nicht gefunden.\nBitte downloade das SwitchBros_BasisPaket neu herunter und installiere es manuell\n\nPower-Taste druecken fuer Neustart...");
-	// 		hidWait()->buttons;
-	// 		launch_payload("sd:/SwitchBros_BasisPaket/payload.bin");
-	// 	}
 
-	EnterMainMenu();
+	gfx_printf("\n\nUpdate Skript nicht gefunden.\nBitte SwitchBros Paket neu installieren\n\nDruecke Power Taste um hekate zu starten...");
+	hidWait()->buttons;
+	launch_payload("sd:/bootloader/update.bin");
+
 
 	// Halt BPMP if we managed to get out of execution.
 	while (true)

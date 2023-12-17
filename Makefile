@@ -10,10 +10,9 @@ include $(DEVKITARM)/base_rules
 
 IPL_LOAD_ADDR := 0x40008000
 LPVERSION_MAJOR := 4
-LPVERSION_MINOR := 1
+LPVERSION_MINOR := 2
 LPVERSION_BUGFX := 1
-LPVERSION_SB := 112
-LPVERSION := \"$(LPVERSION_MAJOR).$(LPVERSION_MINOR).$(LPVERSION_BUGFX).$(LPVERSION_SB)\"
+LPVERSION := \"$(LPVERSION_MAJOR).$(LPVERSION_MINOR).$(LPVERSION_BUGFX)\"
 
 ################################################################################
 
@@ -42,7 +41,7 @@ FFCFG_INC := '"../$(SOURCEDIR)/libs/fatfs/ffconf.h"'
 ################################################################################
 
 CUSTOMDEFINES := -DIPL_LOAD_ADDR=$(IPL_LOAD_ADDR)
-CUSTOMDEFINES += -DLP_VER_MJ=$(LPVERSION_MAJOR) -DLP_VER_MN=$(LPVERSION_MINOR) -DLP_VER_BF=$(LPVERSION_BUGFX) -DLP_VER_SB=$(LPVERSION_SB) -DLP_VER=$(LPVERSION)
+CUSTOMDEFINES += -DLP_VER_MJ=$(LPVERSION_MAJOR) -DLP_VER_MN=$(LPVERSION_MINOR) -DLP_VER_BF=$(LPVERSION_BUGFX) -DLP_VER=$(LPVERSION)
 CUSTOMDEFINES += -DGFX_INC=$(GFX_INC) -DFFCFG_INC=$(FFCFG_INC)
 
 # 0: UART_A, 1: UART_B.
@@ -117,9 +116,9 @@ $(BUILDDIR)/$(TARGET)/script/builtin.c: scripts/*.te
 	@mkdir -p "$(@D)"
 	@mkdir -p "$(BUILDDIR)/$(TARGET)/scripts"
 ifeq ($(OS),Windows_NT)
-	@py ts-minifier.py --such-meme -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
+	@py ts-minifier.py -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
 	@py te2c.py "$(BUILDDIR)/$(TARGET)/script/builtin" "$(BUILDDIR)/$(TARGET)/scripts"
 else
-	@python3 ts-minifier.py --such-meme -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
+	@python3 ts-minifier.py -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
 	@python3 te2c.py "$(BUILDDIR)/$(TARGET)/script/builtin" "$(BUILDDIR)/$(TARGET)/scripts"
 endif

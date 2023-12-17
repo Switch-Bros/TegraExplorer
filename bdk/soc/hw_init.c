@@ -48,17 +48,6 @@
 extern boot_cfg_t b_cfg;
 extern volatile nyx_storage_t *nyx_str;
 
-u32 hw_rst_status;
-u32 hw_rst_reason;
-
-u32 hw_get_chip_id()
-{
-	if (((APB_MISC(APB_MISC_GP_HIDREV) >> 4) & 0xF) >= GP_HIDREV_MAJOR_T210B01)
-		return GP_HIDREV_MAJOR_T210B01;
-	else
-		return GP_HIDREV_MAJOR_T210;
-}
-
 /*
  * CLK_OSC - 38.4 MHz crystal.
  * CLK_M   - 19.2 MHz (osc/2).
@@ -67,6 +56,14 @@ u32 hw_get_chip_id()
  * HCLK    - 204MHz init (-> 408MHz -> OC).
  * PCLK    - 68MHz  init (-> 136MHz -> OC/4).
  */
+
+u32 hw_get_chip_id()
+{
+	if (((APB_MISC(APB_MISC_GP_HIDREV) >> 4) & 0xF) >= GP_HIDREV_MAJOR_T210B01)
+		return GP_HIDREV_MAJOR_T210B01;
+	else
+		return GP_HIDREV_MAJOR_T210;
+}
 
 static void _config_oscillators()
 {
@@ -253,25 +250,36 @@ static void _mbist_workaround()
 
 static void _config_se_brom()
 {
-	// Enable Fuse visibility.
+	// Enable fuse clock.
 	clock_enable_fuse(true);
 
-	// Try to set SBK from fuses. If patched, skip.
-	fuse_set_sbk();
+	// Skip SBK/SSK if sept was run.
+	bool sbk_skip = b_cfg.boot_cfg & BOOT_CFG_SEPT_RUN || FUSE(FUSE_PRIVATE_KEY0) == 0xFFFFFFFF;
+	if (!sbk_skip)
+	{
+		// Bootrom part we skipped.
+		u32 sbk[4] = {
+			FUSE(FUSE_PRIVATE_KEY0),
+			FUSE(FUSE_PRIVATE_KEY1),
+			FUSE(FUSE_PRIVATE_KEY2),
+			FUSE(FUSE_PRIVATE_KEY3)
+		};
+		// Set SBK to slot 14.
+		se_aes_key_set(14, sbk, SE_KEY_128_SIZE);
 
-	// Lock SSK (although it's not set and unused anyways).
-	// se_key_acc_ctrl(15, SE_KEY_TBL_DIS_KEYREAD_FLAG);
+		// Lock SBK from being read.
+		se_key_acc_ctrl(14, SE_KEY_TBL_DIS_KEYREAD_FLAG);
+
+		// Lock SSK (although it's not set and unused anyways).
+		se_key_acc_ctrl(15, SE_KEY_TBL_DIS_KEYREAD_FLAG);
+	}
 
 	// This memset needs to happen here, else TZRAM will behave weirdly later on.
-	memset((void *)TZRAM_BASE, 0, SZ_64K);
+	memset((void *)TZRAM_BASE, 0, 0x10000);
 	PMC(APBDEV_PMC_CRYPTO_OP) = PMC_CRYPTO_OP_SE_ENABLE;
 	SE(SE_INT_STATUS_REG) = 0x1F; // Clear all SE interrupts.
 
-	// Save reset reason.
-	hw_rst_status = PMC(APBDEV_PMC_SCRATCH200);
-	hw_rst_reason = PMC(APBDEV_PMC_RST_STATUS) & PMC_RST_STATUS_MASK;
-
-	// Clear the boot reason to avoid problems later.
+	// Clear the boot reason to avoid problems later
 	PMC(APBDEV_PMC_SCRATCH200) = 0x0;
 	PMC(APBDEV_PMC_RST_STATUS) = 0x0;
 	APB_MISC(APB_MISC_PP_STRAPPING_OPT_A) = (APB_MISC(APB_MISC_PP_STRAPPING_OPT_A) & 0xF0) | (7 << 10);
@@ -344,7 +352,7 @@ void hw_init()
 	// Enable Security Engine clock.
 	clock_enable_se();
 
-	// Enable Fuse visibility.
+	// Enable Fuse clock.
 	clock_enable_fuse(true);
 
 	// Disable Fuse programming.

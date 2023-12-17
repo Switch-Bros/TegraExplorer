@@ -180,11 +180,11 @@ ClassFunction(arrayContains) {
 	
 		if (caller->variableType == StringArrayClass) {
 			if (!strcmp(arg->string.value, iter.string.value))
-				return newIntVariablePtr(i + 1);
+				return newIntVariablePtr(1);
 		}
 		else {
 			if (arg->integer.value == iter.integer.value)
-				return newIntVariablePtr(i + 1);
+				return newIntVariablePtr(1);
 		}
 	}
 
