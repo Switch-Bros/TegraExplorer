@@ -454,7 +454,7 @@ void m_entry_stillNoBootInfo()
 void m_entry_ViewCredits()
 {
     gfx_clearscreen();
-    gfx_printf("\nCommon Problem Resolver %d.%d.%d\nBy Team Neptune\n\nBased on TegraExplorer by SuchMemeManySkill,\nLockpick_RCM & Hekate, from shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF);
+    gfx_printf("\nCommon Problem Resolver v%d.%d.%d\nBy Team Neptune\n\nBased on TegraExplorer by SuchMemeManySkill,\nLockpick_RCM & Hekate, from shchmue & CTCaer\n\n\n", LP_VER_MJ, LP_VER_MN, LP_VER_BF);
 }
 
 void m_entry_fixAll()
