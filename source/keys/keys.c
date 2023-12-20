@@ -145,7 +145,7 @@ static int _derive_master_keys_from_keyblobs(key_derivation_ctx_t *keys) {
     se_aes_key_set(9, keys->sbk, 0x10);
 
     if (!emummc_storage_read(&emmc_storage, KEYBLOB_OFFSET / NX_EMMC_BLOCKSIZE, KB_FIRMWARE_VERSION_600 + 1, keyblob_block)) {
-        DPRINTF("Keyblobs konnten nicht gelesen werden.");
+        DPRINTF("Unable to read keyblobs.");
     }
 
     se_aes_crypt_block_ecb(8, 0, keys->keyblob_key, keyblob_key_source); // temp = unwrap(kbks, tsec)
@@ -178,7 +178,7 @@ static int _derive_master_keys_from_keyblobs(key_derivation_ctx_t *keys) {
 static bool _derive_tsec_keys(tsec_ctxt_t *tsec_ctxt, u32 kb, key_derivation_ctx_t *keys) {
     tsec_ctxt->fw = _find_tsec_fw(tsec_ctxt->pkg1);
     if (!tsec_ctxt->fw) {
-        DPRINTF("TSEC-Firmware kann nicht lokalisiert werden.");
+        DPRINTF("Unable to locate TSEC firmware.");
         return false;
     }
 
@@ -186,7 +186,7 @@ static bool _derive_tsec_keys(tsec_ctxt_t *tsec_ctxt, u32 kb, key_derivation_ctx
 
     tsec_ctxt->size = _get_tsec_fw_size((tsec_key_data_t *)(tsec_ctxt->fw + TSEC_KEY_DATA_OFFSET));
     if (tsec_ctxt->size > PKG1_MAX_SIZE) {
-        DPRINTF("Unerwartete Groesse der TSEC-Firmware.");
+        DPRINTF("Unexpected TSEC firmware size.");
         return false;
     }
 
@@ -228,11 +228,11 @@ static ALWAYS_INLINE u8 *_read_pkg1(const pkg1_id_t **pkg1_id) {
     // Read package1.
     u8 *pkg1 = (u8 *)malloc(PKG1_MAX_SIZE);
     if (!emummc_storage_set_mmc_partition(&emmc_storage, EMMC_BOOT0)) {
-        DPRINTF("Partition kann nicht festgelegt werden.");
+        DPRINTF("Unable to set partition.");
         return NULL;
     }
     if (!emummc_storage_read(&emmc_storage, PKG1_OFFSET / NX_EMMC_BLOCKSIZE, PKG1_MAX_SIZE / NX_EMMC_BLOCKSIZE, pkg1)) {
-        DPRINTF("pkg1 konnte nicht gelesen werden.");
+        DPRINTF("Unable to read pkg1.");
         return NULL;
     }
 

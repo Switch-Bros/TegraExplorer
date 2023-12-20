@@ -86,6 +86,6 @@ int main()
 
 
     free(script);
-    gfx_printf("Abgeschlossen");
+    gfx_printf("done");
 }
 #endif
