@@ -17,7 +17,7 @@ if (fsexists("sd:/switch/prod.keys")) {
 	a=0 fwstr()}
 	if(mountsys("SYSTEM")){print("SYSTEM KONNTE NICHT EINGEBUNDEN WERDEN")pe()}
 	fv()
-}.else(){payload("sd:/config/switchbros-helper/lockpick_sys.bin")}
+}.else(){payload("sd:/config/switchbros-helper/enigma_sys.bin")}
 
 fv()
 sysfw=fw

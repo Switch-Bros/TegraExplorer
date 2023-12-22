@@ -3,7 +3,7 @@ is=["8000000000000120","80000000000000d1","8000000000000047"]
 p=println
 pr=print
 pe={pause() exit()}
-wait={t=timer()while(timer()<(t+tw)){print("Warte fuer",(t+tw-timer()/1000),"Sekunden \r")}}
+wait={t=timer()while(timer()<(t+tw)){print("Warte",(t+tw-timer()/1000),"Sekunden \r")}}
 p("System entferner\n")
 op=["Beenden","sysMMC loeschen"].copy()
 if (emu()){op+"emuMMC loeschen"}
