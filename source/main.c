@@ -71,7 +71,7 @@ volatile nyx_storage_t *nyx_str = (nyx_storage_t *)NYX_STORAGE_ADDR;
 #define RCM_PAYLOAD_ADDR    (EXT_PAYLOAD_ADDR + ALIGN(PATCHED_RELOC_SZ, 0x10))
 #define COREBOOT_END_ADDR   0xD0000000
 #define CBFS_DRAM_EN_ADDR   0x4003e000
-#define  CBFS_DRAM_MAGIC    0x4452414D // "DRAM"
+#define CBFS_DRAM_MAGIC     0x4452414D // "DRAM"
 
 static void *coreboot_addr;
 
@@ -105,7 +105,7 @@ int launch_payload(char *path)
 		FIL fp;
 		if (f_open(&fp, path, FA_READ))
 		{
-			EPRINTFARGS("Payload file is missing!\n(%s)", path);
+			EPRINTFARGS("Payload fehlt!\n(%s)", path);
 			sd_unmount();
 
 			return 1;
@@ -237,7 +237,7 @@ void ipl_main()
 	heap_init(IPL_HEAP_START);
 
 #ifdef DEBUG_UART_PORT
-	uart_send(DEBUG_UART_PORT, (u8 *)"hekate: Hello!\r\n", 16);
+	uart_send(DEBUG_UART_PORT, (u8 *)"hekate: Hallo!\r\n", 16);
 	uart_wait_idle(DEBUG_UART_PORT, UART_TX_IDLE);
 #endif
 
@@ -291,13 +291,21 @@ void ipl_main()
 
 	gfx_clearscreen();
 	
-	if (FileExists("sd:/config/kefir-helper/helper.te"))
-		RunScript("sd:/config/kefir-helper/", newFSEntry("helper.te"));
+	if (FileExists("sd:/SwitchBros_BasisPaket/switch/switchbros-updater/update.te"))
+		RunScript("sd:/SwitchBros_BasisPaket/switch/switchbros-updater", newFSEntry("update.te"));
+	else if (FileExists("sd:/switch/switchbros-updater/update.te"))
+		RunScript("sd:/switch/switchbros-updater", newFSEntry("update.te"));
+	else if (FileExists("sd:/startup.te"))
+		RunScript("sd:/", newFSEntry("startup.te"));
 
-	gfx_printf("\n\nHelper script not found.\nPlease reinstall kefir\n\nPress Power button for reboot to hekate...");
-	hidWait()->buttons;
-	launch_payload("sd:/bootloader/update.bin");
+	// else 
+	// 	{
+	// 		gfx_printf("\n\nUpdate Skript nicht gefunden.\nBitte SwitchBros Paket neu installieren\n\nDruecke Power Taste um hekate zu starten...");
+	// 		hidWait()->buttons;
+	// 		launch_payload("sd:/bootloader/update.bin");
+	// 	}
 
+	EnterMainMenu();
 
 	// Halt BPMP if we managed to get out of execution.
 	while (true)
