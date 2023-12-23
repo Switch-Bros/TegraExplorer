@@ -118,7 +118,7 @@ void ViewKeys(){
             fuseCount++;
     }
 
-    gfx_printf("\n\nPkg1 ID: '%s' (kb %d)\nFuse Zaehler: %d", TConf.pkg1ID, TConf.pkg1ver, fuseCount);
+    gfx_printf("\n\nPkg1 ID: '%s' (kb %d)\nFuse Zaehler: %d", TConf.pkg1ID, fuseCount);
 
     hidWait();
 }

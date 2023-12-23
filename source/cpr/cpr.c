@@ -250,18 +250,18 @@ void m_entry_fixArchiveBit(u32 type)
         {
         case 0:
             strcpy(path, "/");
-            strcpy(label, "SD Card");
+            strcpy(label, "SD-Karte");
             break;
         case 1:
         default:
             strcpy(path, "/Nintendo");
-            strcpy(label, "Nintendo folder");
+            strcpy(label, "Nintendo Ordner");
             break;
         }
 
-        gfx_printf("Traversing all %s files!\nThis may take some time...\n\n", label);
+        gfx_printf("Durchlaufe alle %s Dateien!\nDas kann eine Weile dauern...\n\n", label);
         _fix_attributes(path, &total, type, type);
-        gfx_printf("%kTotal archive bits cleared: %d!%k", 0xFF96FF00, total, 0xFFCCCCCC);
+        gfx_printf("%kAnzahl der Behobenden Archiv bits: %d!%k", 0xFF96FF00, total, 0xFFCCCCCC);
     }
 }
 

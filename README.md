@@ -1,8 +1,9 @@
 # TegraExplorer
 
-[![TegraExplorer](https://img.shields.io/github/checks-status/Switch-Bros/TegraExplorer/master?label=TegraExplorer&style=plastic)](https://github.com/Switch-Bros/TegraExplorer)
-[![Version](https://img.shields.io/github/v/release/Switch-Bros/TegraExplorer?label=Aktuelle%20Version&style=plastic)](https://github.com/Switch-Bros/TegraExplorer/releases) [![Downloads](https://img.shields.io/github/downloads/Switch-Bros/TegraExplorer/total?label=Alle%20Downloads&style=plastic)](https://github.com/Switch-Bros/TegraExplorer/releases)
-[![Donations](https://img.shields.io/badge/Support%20on-Ko--Fi-red?style=plastic)](https://ko-fi.com/suchmememanyskill)
+[![TegraExplorer builder](https://github.com/suchmememanyskill/TegraExplorer/workflows/TegraExplorer%20builder/badge.svg)](https://github.com/suchmememanyskill/TegraExplorer/actions)
+[![Downloads](https://img.shields.io/github/downloads/suchmememanyskill/TegraExplorer/total)](https://github.com/suchmememanyskill/TegraExplorer/releases)
+[![Version](https://img.shields.io/github/v/release/suchmememanyskill/tegraexplorer)](https://github.com/suchmememanyskill/TegraExplorer/releases)
+[![Donations](https://img.shields.io/badge/Support%20on-Ko--Fi-red)](https://ko-fi.com/suchmememanyskill)
 
 A payload-based file explorer for your switch!
 
@@ -62,6 +63,7 @@ Other awesome people:
 - Emmo
 - Gengar
 - Einso
+- JeffV
 
 ## Screenshots
 
