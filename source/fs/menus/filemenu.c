@@ -59,7 +59,7 @@ void MoveClipboard(char *path, FSEntry_t entry){
 void DeleteFile(char *path, FSEntry_t entry){
     gfx_con_setpos(384 + 16, 200 + 16 + 10 * 16);
     SETCOLOR(COLOR_RED, COLOR_DARKGREY);
-    gfx_printf("Bist du dir sicher?      ");
+    gfx_printf("Bist du sicher?      ");
     
     WaitFor(500);
     if (!MakeYesNoHorzMenu(3, COLOR_DARKGREY))

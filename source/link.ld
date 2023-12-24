@@ -5,9 +5,7 @@ SECTIONS {
 	. = __ipl_start;
 	.text : {
 		*(.text._start);
-		KEEP(*(._boot_cfg));
-		KEEP(*(._ipl_version));
-		*(.text._irq_setup);
+		*(._boot_cfg);
 		*(.text*);
 	}
 	.data : {

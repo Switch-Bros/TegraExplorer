@@ -46,12 +46,9 @@ enum {
     #else 
     MainExit = 0,
     #endif
-    MainReloadTE,
     MainPowerOff,
-    MainRebootRCM,
-    MainRebootNormal,
     MainRebootHekate,
-    MainRebootAMS,
+    MainReloadTE,
     MainScripts,
 };
 
@@ -70,13 +67,13 @@ MenuEntry_t mainMenuEntries[] = {
     #else 
     [MainExit] = {.optionUnion = COLORTORGB(COLOR_WHITE), .name = "\n-- Beenden --"},
     #endif
-    [MainReloadTE] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "TegraExplorer neu laden"},
     [MainPowerOff] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Ausschalten"},
-    [MainRebootRCM] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in RCM Modus"},
-    [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart normal"},
+    // [MainRebootAMS] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to hekate"},
+    // [MainRebootRCM] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to RCM"},
+    // [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot normally"},
     [MainRebootHekate] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in hekate"},
-    [MainRebootAMS] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in atmosphere"},
-    [MainScripts] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Skripte --"}
+    [MainReloadTE] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "TegraExplorer neu laden"},
+    [MainScripts] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Scripte --"}
 };
 
 void HandleSD(){
@@ -118,7 +115,7 @@ void ViewKeys(){
             fuseCount++;
     }
 
-    gfx_printf("\n\nPkg1 ID: '%s' (kb %d)\nFuse Zaehler: %d", TConf.pkg1ID, fuseCount);
+    gfx_printf("\n\nPkg1 ID: '%s' (kb %d)\nFuse Zaehler: %d", TConf.pkg1ID, TConf.pkg1ver, fuseCount);
 
     hidWait();
 }
@@ -167,12 +164,12 @@ menuPaths mainMenuPaths[] = {
     [MainViewKeys] = ViewKeys,
     [MainViewCredits] = ViewCredits,
     #endif
-    [MainReloadTE] = ReloadTE,
-    [MainRebootAMS] = RebootToAMS,
-    [MainRebootHekate] = RebootToHekate,
-    [MainRebootRCM] = reboot_rcm,
     [MainPowerOff] = power_off,
-    [MainRebootNormal] = reboot_normal,
+    [MainRebootHekate] = RebootToHekate,
+    // [MainRebootAMS] = RebootToAMS,
+    // [MainRebootRCM] = reboot_rcm,
+    // [MainRebootNormal] = reboot_normal,
+    [MainReloadTE] = ReloadTE
 };
 
 void EnterMainMenu(){
@@ -192,9 +189,9 @@ void EnterMainMenu(){
         mainMenuEntries[MainViewKeys].hide = !TConf.keysDumped;
 
         // -- Exit --
-        mainMenuEntries[MainRebootAMS].hide = (!sd_mounted || !FileExists("sd:/atmosphere/reboot_payload.bin"));
+        // mainMenuEntries[MainRebootAMS].hide = (!sd_mounted || !FileExists("sd:/atmosphere/reboot_payload.bin"));
         mainMenuEntries[MainRebootHekate].hide = (!sd_mounted || !FileExists("sd:/bootloader/update.bin"));
-        mainMenuEntries[MainRebootRCM].hide = h_cfg.t210b01;
+        // mainMenuEntries[MainRebootRCM].hide = h_cfg.t210b01;
         #endif
         // -- Scripts --
         #ifndef INCLUDE_BUILTIN_SCRIPTS

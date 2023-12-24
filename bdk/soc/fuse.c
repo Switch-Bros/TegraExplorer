@@ -3,7 +3,6 @@
  * Copyright (c) 2018 shuffle2
  * Copyright (c) 2018 balika011
  * Copyright (c) 2019-2021 CTCaer
- * Copyright (c) 2021 shchmue
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -19,13 +18,14 @@
  */
 
 #include <string.h>
-
 #include <sec/se.h>
 #include <sec/se_t210.h>
 #include <soc/fuse.h>
 #include <soc/hw_init.h>
 #include <soc/t210.h>
 #include <utils/types.h>
+
+extern boot_cfg_t b_cfg;
 
 static const u32 evp_thunk_template[] = {
 	0xe92d0007, //   STMFD   SP!, {R0-R2}
@@ -79,15 +79,6 @@ u32 fuse_read_odm_keygen_rev()
 	return 0;
 }
 
-u32 fuse_read_bootrom_rev()
-{
-	u32 rev = FUSE(FUSE_SOC_SPEEDO_1_CALIB);
-	if (hw_get_chip_id() == GP_HIDREV_MAJOR_T210)
-		return rev;
-	else
-		return rev | (1 << 12);
-}
-
 u32 fuse_read_dramid(bool raw_id)
 {
 	u32 dramid = (fuse_read_odm(4) & 0xF8) >> 3;
@@ -129,16 +120,24 @@ u32 fuse_read_hw_type()
 			return FUSE_NX_HW_TYPE_AULA;
 		case 1:
 		default:
-			return FUSE_NX_HW_TYPE_IOWA;
+			return FUSE_NX_HW_TYPE_IOWA;			
 		}
 	}
 
 	return FUSE_NX_HW_TYPE_ICOSA;
 }
 
+bool is_erista() {
+	if (fuse_read_hw_type() == FUSE_NX_HW_TYPE_ICOSA)
+		return HW_ERISTA;
+	return HW_MARIKO;
+}
+
 int fuse_set_sbk()
 {
-	if (FUSE(FUSE_PRIVATE_KEY0) != 0xFFFFFFFF)
+	// Skip SBK/SSK if sept was run.
+	bool sbk_skip = b_cfg.boot_cfg & BOOT_CFG_SEPT_RUN || FUSE(FUSE_PRIVATE_KEY0) == 0xFFFFFFFF;
+	if (!sbk_skip)
 	{
 		// Read SBK from fuses.
 		u32 sbk[4] = {

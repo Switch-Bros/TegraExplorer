@@ -373,11 +373,6 @@ ClassFunction(stdRemoveMacFolders){
 	return &emptyClass;
 }
 
-ClassFunction(stdDisableSysmodules){
-	m_entry_deleteBootFlags(0);
-	return &emptyClass;
-}
-
 ClassFunction(stdRmDir){
 	return newIntVariablePtr(FolderDelete(args[0]->string.value).err);
 }
@@ -406,7 +401,7 @@ ClassFunction(stdFileRead){
 	u32 fSize = 0;
 	u8 *buff = sd_file_read(args[0]->string.value, &fSize);
 	if (buff == NULL){
-		SCRIPT_FATAL_ERR("Datei konnte nicht gelesen werden");
+		SCRIPT_FATAL_ERR("Failed to read file");
 	}
 	
 	Vector_t vec = vecFromArray(buff, fSize, sizeof(u8));
@@ -489,8 +484,13 @@ ClassFunction(stdIsPatched){
 	return newIntVariablePtr(fuse_check_patched_rcm());
 }
 
-ClassFunction(stdHwType){
-	return newIntVariablePtr(fuse_read_hw_type());
+ClassFunction(stdIsErista){
+	return newIntVariablePtr(is_erista());
+}
+
+ClassFunction(stdRebootNormal){
+	power_set_state(POWER_OFF_REBOOT);
+	return &emptyClass;
 }
 
 #else
@@ -515,7 +515,6 @@ STUBBED(stdGetMs)
 STUBBED(stdClear)
 STUBBED(stdFixAttributes)
 STUBBED(stdRemoveMacFolders)
-STUBBED(stdDisableSysmodules)
 STUBBED(stdRmDir)
 STUBBED(stdFileExists)
 STUBBED(stdFileDel)
@@ -532,6 +531,7 @@ STUBBED(stdEmummcFileWrite)
 STUBBED(stdEscPaths)
 STUBBED(stdGetCwd)
 STUBBED(stdPower)
+STUBBED(stdRebootNormal)
 STUBBED(stdSetPrintPos)
 STUBBED(stdSetPixels)
 STUBBED(stdIsPatched)
@@ -583,11 +583,9 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	{"emummcread", stdEmummcFileRead, 2, twoStringArgStd},
 	{"emummcwrite", stdEmummcFileWrite, 2, twoStringArgStd},
 	{"fuse_patched", stdIsPatched, 0, 0},
-	{"fuse_hwtype", stdHwType, 0, 0},
+	{"is_erista", stdIsErista, 0, 0},
 	{"fixattrib", stdFixAttributes, 0, 0},
 	{"removemacfolders", stdRemoveMacFolders, 0, 0},
-	{"disablemodules", stdDisableSysmodules, 0, 0},
-
 
 	// FileSystem
 	// 	Dir
@@ -606,6 +604,7 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	// 	Utils
 	{"fsexists", stdFileExists, 1, twoStringArgStd},
 	{"payload", stdLaunchPayload, 1, twoStringArgStd},
+	{"reboot_ofw", stdRebootNormal, 0, 0},
 	{"combinepath", stdCombinePaths, VARARGCOUNT, 0},
 	{"escapepath", stdEscPaths, 1, twoStringArgStd},
 };

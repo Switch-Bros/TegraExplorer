@@ -173,7 +173,7 @@ ClassFunction(createTypedArray) {
 		vecAdd(&v, str);
 	}
 	else {
-		SCRIPT_FATAL_ERR("Unbekannter Array Typ");
+		SCRIPT_FATAL_ERR("Unknown array type");
 	}
 
 	Variable_t arrayVar = { .variableType = (arg->variableType == IntClass) ? IntArrayClass : StringArrayClass, .solvedArray.vector = v };

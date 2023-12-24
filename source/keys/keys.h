@@ -1,8 +1,6 @@
 #pragma once
 #include <utils/types.h>
-
-#define HOS_PKG11_MAGIC 0x31314B50
-#define HOS_EKS_MAGIC   0x30534B45
+#include "../hos/hos.h"
 
 #define AES_128_KEY_SIZE 16
 #define RSA_2048_KEY_SIZE 256
@@ -87,23 +85,6 @@ typedef struct {
     u32 sbk[4];
     keyblob_t keyblob;
 } key_derivation_ctx_t;
-
-typedef struct _tsec_key_data_t
-{
-	u8 debug_key[0x10];
-	u8 blob0_auth_hash[0x10];
-	u8 blob1_auth_hash[0x10];
-	u8 blob2_auth_hash[0x10];
-	u8 blob2_aes_iv[0x10];
-	u8 hovi_eks_seed[0x10];
-	u8 hovi_common_seed[0x10];
-	u32 blob0_size;
-	u32 blob1_size;
-	u32 blob2_size;
-	u32 blob3_size;
-	u32 blob4_size;
-	u8 reserved[0x7C];
-} tsec_key_data_t;
 
 int DumpKeys();
 void PrintKey(u8 *key, u32 len);

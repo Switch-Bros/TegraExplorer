@@ -45,7 +45,7 @@ int FolderMoveClipboard(const char *path){
 int DeleteFolder(const char *path){
     gfx_con_setpos(384 + 16, 200 + 16 + 10 * 16);
     SETCOLOR(COLOR_RED, COLOR_DARKGREY);
-    gfx_printf("Bist du dir sicher?        ");
+    gfx_printf("Bist du sicher?        ");
 
     WaitFor(1000);
     if (MakeYesNoHorzMenu(3, COLOR_DARKGREY)){

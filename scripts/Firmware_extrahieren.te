@@ -15,21 +15,20 @@ fv={a=readsave("bis:/save/8000000000000120")
 		maj=((ver>>26)&((1<<6)- 1))
 	}.else(){print("Firmware nicht gefunden")pe()}
 	a=0 fwstr()}
-if(mountsys("SYSTEM")){print("SYSTEM MOUNT FAIL")pe()}
+if(mountsys("SYSTEM")){print("SYSTEM KONNTE NICHT EINGEBUNDEN WERDEN")pe()}
 fv()
 sysfw=fw
-p("Sys'  fw is",fw)
+p("sysMMC Firmware:",fw)
 emufw=""
-if (emu()){if(!mountemu("SYSTEM")){fv()emufw=fw p("Emu's fw is",fw)}}
+if (emu()){if(!mountemu("SYSTEM")){fv()emufw=fw p("emuMMC Firmware:",fw)}}
 op=["Beenden","Extrahiere sysMMC"].copy()
 if (emufw!=""){op+"Extrahiere emuMMC"}
 p()r=menu(op,0)clear()
 if(r==0){exit()}
 if(r==1){fw=sysfw if(mountsys("SYSTEM")){print("SYSTEM KONNTE NICHT EINGEBUNDEN WERDEN")pe()}}
 if(r==2){fw=emufw if(mountemu("SYSTEM")){print("SYSTEM KONNTE NICHT EINGEBUNDEN WERDEN")pe()}}
-mkdir("sd:/tegraexplorer")
-mkdir("sd:/tegraexplorer/Firmware")
-bsp="sd:/tegraexplorer/Firmware/"+fw
+mkdir("sd:/Firmware")
+bsp="sd:/Firmware/"+fw
 if(fsexists(bsp)){p("Das Verzeichnis ist bereits vorhanden! Druecke Power um das Verzeichnis zu ueberschreiben, oder eine andere Taste um abzubrechen.") a=pause() if(!a.power){exit()} deldir(bsp)}
 mkdir(bsp)
 p("Extrahiere nach",bsp)
@@ -51,4 +50,6 @@ dump={
 }
 fi=con.files dump()
 f=1 fi=con.folders dump()
-p("\nAbgeschlossen! Benoetigte Zeit",timer()-t/1000,"s")pause()
+p("\nAbgeschlossen! Benoetigte Zeit",timer()-t/1000,"s")
+p("  Druecke eine beliebige Taste um das Skript zu beenden")
+pause()

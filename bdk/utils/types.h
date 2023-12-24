@@ -20,6 +20,16 @@
 
 #include <assert.h>
 
+#define ALWAYS_INLINE inline __attribute__((always_inline))
+#define LOG2(n) (32 - __builtin_clz(n) - 1)
+
+#define COLOR_RED    0xFFE70000
+#define COLOR_ORANGE 0xFFFF8C00
+#define COLOR_YELLOW 0xFFFFFF40
+#define COLOR_GREEN  0xFF40FF00
+#define COLOR_BLUE   0xFF00DDFF
+#define COLOR_VIOLET 0xFF8040FF
+
 /* Types */
 typedef signed char s8;
 typedef short s16;
@@ -50,14 +60,6 @@ typedef u64 uptr;
 #else /* __arm__ or __thumb__ */
 typedef u32 uptr;
 #endif
-
-/* Colors */
-#define COLOR_RED    0xFFE70000
-#define COLOR_ORANGE 0xFFFF8C00
-#define COLOR_YELLOW 0xFFFFFF40
-#define COLOR_GREEN  0xFF40FF00
-#define COLOR_BLUE   0xFF00DDFF
-#define COLOR_VIOLET 0xFF8040FF
 
 static const u32 colors[6] = {COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_BLUE, COLOR_VIOLET};
 
@@ -97,7 +99,6 @@ static const u32 colors[6] = {COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN
 #define SZ_PAGE SZ_4K
 
 /* Macros */
-#define ALWAYS_INLINE inline __attribute__((always_inline))
 #define ALIGN(x, a) (((x) + (a) - 1) & ~((a) - 1))
 #define ALIGN_DOWN(x, a) ((x) & ~((a) - 1))
 #define BIT(n) (1U << (n))
@@ -106,9 +107,6 @@ static const u32 colors[6] = {COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN
 #define DIV_ROUND_UP(a, b) ((a + b - 1) / b)
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
-#define LOG2(n) (32 - __builtin_clz(n) - 1)
-#define CLZ(n) __builtin_clz(n)
-#define CLO(n) __builtin_clz(~n)
 
 #define OFFSET_OF(t, m) ((uptr)&((t *)NULL)->m)
 #define CONTAINER_OF(mp, t, mn) ((t *)((uptr)mp - OFFSET_OF(t, mn)))
@@ -123,6 +121,9 @@ static const u32 colors[6] = {COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN
 #define BOOT_CFG_FROM_LAUNCH BIT(1)
 #define BOOT_CFG_FROM_ID     BIT(2)
 #define BOOT_CFG_TO_EMUMMC   BIT(3)
+#define BOOT_CFG_SEPT_RUN    BIT(7)
+
+#define EXTRA_CFG_DUMP_EMUMMC BIT(0)
 
 #define EXTRA_CFG_KEYS    BIT(0)
 #define EXTRA_CFG_PAYLOAD BIT(1)
