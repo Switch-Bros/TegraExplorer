@@ -112,7 +112,7 @@ void DumpSysFw(){
 		gfx_printf("\nDump fehlgeschlagen...\n");
 	}
 
-	gfx_printf("\n\nAbgeschlossen! Benötigte Zeit: %ds\nBeliebige Taste zum Beenden", get_tmr_s() - timer);
+	gfx_printf("\n\nAbgeschlossen! Benoetigte Zeit: %ds\nBeliebige Taste zum Beenden", get_tmr_s() - timer);
 	free(baseSdPath);
 	hidWait();
 }

@@ -46,9 +46,12 @@ enum {
     #else 
     MainExit = 0,
     #endif
-    MainPowerOff,
-    MainRebootHekate,
     MainReloadTE,
+    MainPowerOff,
+    MainRebootRCM,
+    MainRebootNormal,
+    MainRebootHekate,
+    MainRebootAMS,
     MainScripts,
 };
 
@@ -58,7 +61,7 @@ MenuEntry_t mainMenuEntries[] = {
     [MainBrowseSd] = {.optionUnion = COLORTORGB(COLOR_GREEN), .name = "SD durchsuchen"},
     [MainMountSd] = {.optionUnion = COLORTORGB(COLOR_YELLOW)}, // To mount/unmount the SD
     [MainBrowseEmmc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "EMMC durchsuchen"},
-    [MainBrowseEmummc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "EMUMMC durchsuchen"},
+    [MainBrowseEmummc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "emuMMC durchsuchen"},
     [MainTools] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Tools --"},
     [MainPartitionSd] = {.optionUnion = COLORTORGB(COLOR_ORANGE), .name = "SD-Karte partitionieren"},
     [MainViewKeys] = {.optionUnion = COLORTORGB(COLOR_YELLOW), .name = "Ausgelesene Keys anschauen"},
@@ -67,12 +70,12 @@ MenuEntry_t mainMenuEntries[] = {
     #else 
     [MainExit] = {.optionUnion = COLORTORGB(COLOR_WHITE), .name = "\n-- Beenden --"},
     #endif
-    [MainPowerOff] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Ausschalten"},
-    // [MainRebootAMS] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to hekate"},
-    // [MainRebootRCM] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot to RCM"},
-    // [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Reboot normally"},
-    [MainRebootHekate] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in hekate"},
     [MainReloadTE] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "TegraExplorer neu laden"},
+    [MainPowerOff] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Ausschalten"},
+    [MainRebootRCM] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in RCM Modus"},
+    [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "normaler Neustart"},
+    [MainRebootHekate] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in hekate"},
+    [MainRebootAMS] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in atmosphere"},
     [MainScripts] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Scripte --"}
 };
 
@@ -164,12 +167,12 @@ menuPaths mainMenuPaths[] = {
     [MainViewKeys] = ViewKeys,
     [MainViewCredits] = ViewCredits,
     #endif
-    [MainPowerOff] = power_off,
+    [MainReloadTE] = ReloadTE,
+    [MainRebootAMS] = RebootToAMS,
     [MainRebootHekate] = RebootToHekate,
-    // [MainRebootAMS] = RebootToAMS,
-    // [MainRebootRCM] = reboot_rcm,
-    // [MainRebootNormal] = reboot_normal,
-    [MainReloadTE] = ReloadTE
+    [MainRebootRCM] = reboot_rcm,
+    [MainPowerOff] = power_off,
+    [MainRebootNormal] = reboot_normal,
 };
 
 void EnterMainMenu(){
@@ -189,9 +192,9 @@ void EnterMainMenu(){
         mainMenuEntries[MainViewKeys].hide = !TConf.keysDumped;
 
         // -- Exit --
-        // mainMenuEntries[MainRebootAMS].hide = (!sd_mounted || !FileExists("sd:/atmosphere/reboot_payload.bin"));
+        mainMenuEntries[MainRebootAMS].hide = (!sd_mounted || !FileExists("sd:/atmosphere/reboot_payload.bin"));
         mainMenuEntries[MainRebootHekate].hide = (!sd_mounted || !FileExists("sd:/bootloader/update.bin"));
-        // mainMenuEntries[MainRebootRCM].hide = h_cfg.t210b01;
+        mainMenuEntries[MainRebootRCM].hide = h_cfg.t210b01;
         #endif
         // -- Scripts --
         #ifndef INCLUDE_BUILTIN_SCRIPTS

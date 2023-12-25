@@ -27,8 +27,9 @@ p()r=menu(op,0)clear()
 if(r==0){exit()}
 if(r==1){fw=sysfw if(mountsys("SYSTEM")){print("SYSTEM KONNTE NICHT EINGEBUNDEN WERDEN")pe()}}
 if(r==2){fw=emufw if(mountemu("SYSTEM")){print("SYSTEM KONNTE NICHT EINGEBUNDEN WERDEN")pe()}}
-mkdir("sd:/Firmware")
-bsp="sd:/Firmware/"+fw
+mkdir("sd:/tegraexplorer")
+mkdir("sd:/tegraexplorer/Firmware")
+bsp="sd:/tegraexplorer/Firmware/"+fw
 if(fsexists(bsp)){p("Das Verzeichnis ist bereits vorhanden! Druecke Power um das Verzeichnis zu ueberschreiben, oder eine andere Taste um abzubrechen.") a=pause() if(!a.power){exit()} deldir(bsp)}
 mkdir(bsp)
 p("Extrahiere nach",bsp)

@@ -234,8 +234,13 @@ char *powNames[] = {
 	"volminus",
 };
 
-Variable_t *hidToVar(u32 raw){
+// Takes [int]. Returns dict[a,b,x,y,down,up,right,left,power,volplus,volminus,raw]. int: mask for hidWaitMask 
+ClassFunction(stdPauseMask){
 	Variable_t ret = {.variableType = DictionaryClass, .dictionary.vector = newVec(sizeof(Dict_t), 9)};
+	Input_t *i = hidWaitMask((u32)getIntValue(*args));
+	
+	u32 raw = i->buttons;
+
 	addIntToDict(&ret, "raw", raw);
 
 	for (int i = 0; i < ARRAY_SIZE(abxyNames); i++){
@@ -258,19 +263,6 @@ Variable_t *hidToVar(u32 raw){
 	}
 
 	return copyVariableToPtr(ret);
-}
-
-ClassFunction(stdRead){
-	Input_t *i = hidRead();
-	u32 raw = i->buttons;
-	return hidToVar(raw); 
-}
-
-// Takes [int]. Returns dict[a,b,x,y,down,up,right,left,power,volplus,volminus,raw]. int: mask for hidWaitMask 
-ClassFunction(stdPauseMask){
-	Input_t *i = hidWaitMask((u32)getIntValue(*args));
-	u32 raw = i->buttons;
-	return hidToVar(raw);
 }
 
 // Takes none. Returns dict (same as stdPauseMask). 
@@ -373,6 +365,11 @@ ClassFunction(stdRemoveMacFolders){
 	return &emptyClass;
 }
 
+ClassFunction(stdDisableSysmodules){
+	m_entry_deleteBootFlags(0);
+	return &emptyClass;
+}
+
 ClassFunction(stdRmDir){
 	return newIntVariablePtr(FolderDelete(args[0]->string.value).err);
 }
@@ -401,7 +398,7 @@ ClassFunction(stdFileRead){
 	u32 fSize = 0;
 	u8 *buff = sd_file_read(args[0]->string.value, &fSize);
 	if (buff == NULL){
-		SCRIPT_FATAL_ERR("Failed to read file");
+		SCRIPT_FATAL_ERR("Datei konnte nicht gelesen werden");
 	}
 	
 	Vector_t vec = vecFromArray(buff, fSize, sizeof(u8));
@@ -484,13 +481,8 @@ ClassFunction(stdIsPatched){
 	return newIntVariablePtr(fuse_check_patched_rcm());
 }
 
-ClassFunction(stdIsErista){
-	return newIntVariablePtr(is_erista());
-}
-
-ClassFunction(stdRebootNormal){
-	power_set_state(POWER_OFF_REBOOT);
-	return &emptyClass;
+ClassFunction(stdHwType){
+	return newIntVariablePtr(fuse_read_hw_type());
 }
 
 #else
@@ -505,7 +497,6 @@ STUBBED(stdMkdir)
 STUBBED(stdGetMemUsage)
 STUBBED(stdGetNcaType)
 STUBBED(stdPause)
-STUBBED(stdRead)
 STUBBED(stdPauseMask)
 STUBBED(stdColor)
 STUBBED(stdMenuFull)
@@ -515,6 +506,7 @@ STUBBED(stdGetMs)
 STUBBED(stdClear)
 STUBBED(stdFixAttributes)
 STUBBED(stdRemoveMacFolders)
+STUBBED(stdDisableSysmodules)
 STUBBED(stdRmDir)
 STUBBED(stdFileExists)
 STUBBED(stdFileDel)
@@ -531,7 +523,6 @@ STUBBED(stdEmummcFileWrite)
 STUBBED(stdEscPaths)
 STUBBED(stdGetCwd)
 STUBBED(stdPower)
-STUBBED(stdRebootNormal)
 STUBBED(stdSetPrintPos)
 STUBBED(stdSetPixels)
 STUBBED(stdIsPatched)
@@ -568,7 +559,6 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	{"timer", stdGetMs, 0, 0},
 	{"pause", stdPauseMask, 1, threeIntsStd},
 	{"pause", stdPause, 0, 0},
-	{"hidread", stdRead, 0, 0},
 	{"color", stdColor, 1, threeIntsStd},
 	{"menu", stdMenuFull, 3, menuArgsStd},
 	{"menu", stdMenuFull, 2, menuArgsStd},
@@ -583,9 +573,11 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	{"emummcread", stdEmummcFileRead, 2, twoStringArgStd},
 	{"emummcwrite", stdEmummcFileWrite, 2, twoStringArgStd},
 	{"fuse_patched", stdIsPatched, 0, 0},
-	{"is_erista", stdIsErista, 0, 0},
+	{"fuse_hwtype", stdHwType, 0, 0},
 	{"fixattrib", stdFixAttributes, 0, 0},
 	{"removemacfolders", stdRemoveMacFolders, 0, 0},
+	{"disablemodules", stdDisableSysmodules, 0, 0},
+
 
 	// FileSystem
 	// 	Dir
@@ -604,7 +596,6 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	// 	Utils
 	{"fsexists", stdFileExists, 1, twoStringArgStd},
 	{"payload", stdLaunchPayload, 1, twoStringArgStd},
-	{"reboot_ofw", stdRebootNormal, 0, 0},
 	{"combinepath", stdCombinePaths, VARARGCOUNT, 0},
 	{"escapepath", stdEscPaths, 1, twoStringArgStd},
 };

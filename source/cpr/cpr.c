@@ -93,9 +93,6 @@ int listdir(char *path, u32 hos_folder)
     u32 dirLength = 0;
     static FILINFO fno;
 
-    u32 x, y;
-    gfx_con_getpos(&x, &y);
-
     // Open directory.
     res = f_opendir(&dir, path);
     if (res != FR_OK)
@@ -133,10 +130,6 @@ int listdir(char *path, u32 hos_folder)
                 strcmp(fno.fname, ".fseventsd") == 0 ||
                 strcmp(fno.fname, ".TemporaryItems") == 0)
             {
-                gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-                BoxRestOfScreen();
-
-                gfx_con_setpos(x, y);
                 _FolderDelete(path);
             }
 
@@ -156,10 +149,6 @@ int listdir(char *path, u32 hos_folder)
                 strcmp(fno.fname, ".TemporaryItems") == 0 ||
                 _StartsWith(fno.fname, "._"))
             {
-                gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-                BoxRestOfScreen();
-
-                gfx_con_setpos(x, y);
                 _DeleteFileSimple(path);
             }
         }
@@ -175,9 +164,6 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
     DIR dir;
     u32 dirLength = 0;
     static FILINFO fno;
-
-    u32 x, y;
-    gfx_con_getpos(&x, &y);
 
     if (check_first_run)
     {
@@ -213,7 +199,7 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
             break;
 
         // Skip official Nintendo dir if started from root.
-        if (!hos_folder && (!strcmp(fno.fname, "Nintendo") || !strcmp(fno.fname, "roms") || !strcmp(fno.fname, "contents") || !strcmp(fno.fname, "erpt_reports") || !strcmp(fno.fname, "fatal_reports") || !strcmp(fno.fname, "fatal_errors") || !strcmp(fno.fname, "crash_reports")))
+        if (!hos_folder && !strcmp(fno.fname, "Nintendo"))
             continue;
 
         // Set new directory or file.
@@ -224,12 +210,7 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
         if (fno.fattrib & AM_ARC)
         {
             *total = *total + 1;
-            // gfx_printf("%s\n", path);
-            gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-            BoxRestOfScreen();
-
-            gfx_con_setpos(x, y);
-            // gfx_clearscreen();
+            gfx_printf("%s\n", path);
             f_chmod(path, 0, AM_ARC);
         }
 
@@ -240,12 +221,7 @@ int _fix_attributes(char *path, u32 *total, u32 hos_folder, u32 check_first_run)
             if (hos_folder && !strcmp(fno.fname + strlen(fno.fname) - 4, ".nca"))
             {
                 *total = *total + 1;
-                // gfx_printf("%s\n", path);
-                gfx_puts_limit(path, (YLEFT - x) / 16 - 10);
-                BoxRestOfScreen();
-
-                gfx_con_setpos(x, y);
-                // gfx_clearscreen();
+                gfx_printf("%s\n", path);
                 f_chmod(path, AM_ARC, AM_ARC);
             }
 
@@ -270,57 +246,23 @@ void m_entry_fixArchiveBit(u32 type)
     u32 total = 0;
     if (sd_mount())
     {
-        // strcpy(path, "/");
-        // strcpy(label, "SD Card");
-        // gfx_printf("Durchlaufe \"%s\"..\nDas kann einige Zeit dauern...\n\n", label);
-        // _fix_attributes(path, &total, type, type);
+        switch (type)
+        {
+        case 0:
+            strcpy(path, "/");
+            strcpy(label, "SD-Karte");
+            break;
+        case 1:
+        default:
+            strcpy(path, "/Nintendo");
+            strcpy(label, "Nintendo Ordner");
+            break;
+        }
 
-        strcpy(path, "atmosphere");
-        strcpy(label, "atmosphere");
-        gfx_printf("Attribute reparieren. Das kann einige Zeit dauern...", label);
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
+        gfx_printf("Bearbeite %s Dateien!\nDas kann einige Zeit dauern...\n\n", label);
         _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "bootloader");
-        strcpy(label, "bootloader");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "switch");
-        strcpy(label, "switch");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "config");
-        strcpy(label, "config");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "firmware");
-        strcpy(label, "firmware");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
-
-        strcpy(path, "emummc");
-        strcpy(label, "emummc");
-        gfx_printf("\nDurchlaufe \"%k%s%k\"..\n\n", 0xFF96FF00, label, 0xFFCCCCCC);
-        _fix_attributes(path, &total, type, type);
-        gfx_clearscreen();
-        total = total + total;
+        gfx_printf("%kReparierte archive bits insgesamt: %d!%k", 0xFF96FF00, total, 0xFFCCCCCC);
     }
-
-    gfx_clearscreen();
-    gfx_printf("%kAnzahl geloeschter Archiv Bits: %d!%k", 0xFF96FF00, total, 0xFFCCCCCC);
 }
 
 void m_entry_fixAIOUpdate()
@@ -445,7 +387,7 @@ void _deleteTheme(char *basePath, char *folderId)
 void m_entry_deleteInstalledThemes()
 {
     gfx_clearscreen();
-    gfx_printf("\n\n-- Loesche installierte Themes.\n\n");
+    gfx_printf("\n\n-- Loesche installierte Themes\n\n");
     _deleteTheme("sd:/atmosphere/contents", "0100000000001000");
     _deleteTheme("sd:/atmosphere/contents", "0100000000001007");
     _deleteTheme("sd:/atmosphere/contents", "0100000000001013");
@@ -503,10 +445,10 @@ void m_entry_stillNoBootInfo()
     gfx_printf("Entferne sie und starte neu.\n\n");
 
     gfx_printf("%kHast du vor kurzem Atmosphere/SwitchBros. aktualisiert?\n", COLOR_WHITE);
-    gfx_printf("Stecke die SD-Karte in deinen PC, loesche 'atmosphere', 'bootloader' & 'sept' Ordner, lade dein bevorzugtes CFW runter und pack die Dateien auf die SD-Karte.\nEinfacher ist es das SwitchBros. Paket herunterzuladen, die SD-Karte in den PC stecken, und dann 'NUR' das 'SwitchBros-SD-Werkzeug.bat' auszufuehren.\n\n");
+    gfx_printf("Stecke die SD-Karte in deinen PC, hol das neue Paket vom switchbros Discord-Server und starte die NOOB-O-MAT.bat.\nDanach kannst du den SwitchBros-Updater ausfuehren.\n\n");
 
     gfx_printf("%kHast du eine neue SD-Karte gekauft?\n", COLOR_WHITE);
-    gfx_printf("Vergewissere dich das es keine 'fake' Karte ist.\n\n");
+    gfx_printf("Vergewissere dich das es keine fake Karte ist.\n\n");
 }
 
 void m_entry_ViewCredits()
