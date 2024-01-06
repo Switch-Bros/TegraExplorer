@@ -67,8 +67,8 @@ all: $(OUTPUTDIR)/$(TARGET)_small.bin
 	@if [ ${BIN_SIZE} -gt 126296 ]; then echo "\e[1;33mPayload size exceeds limit!\e[0m"; fi
 	@if [ ${COMPR_BIN_SIZE} -gt 126296 ]; then echo "\e[1;33mCompressed Payload size exceeds limit!\e[0m"; fi
 
-	@cp $(CURDIR)/output/TegraExplorer_small.bin $(CURDIR)/../SwitchBros_BasisPaket/bootloader/payloads/TegraExplorer.bin
-	@cp $(CURDIR)/output/TegraExplorer_small.bin $(CURDIR)/../SwitchBros_BasisPaket/switch/switchbros-updater/switchbros-updater.bin
+#	@cp $(CURDIR)/output/TegraExplorer_small.bin $(CURDIR)/../SwitchBros_BasisPaket/bootloader/payloads/TegraExplorer.bin
+#	@cp $(CURDIR)/output/TegraExplorer_small.bin $(CURDIR)/../SwitchBros_BasisPaket/switch/switchbros-updater/switchbros-updater.bin
 
 clean:
 	@rm -rf $(BUILDDIR)
