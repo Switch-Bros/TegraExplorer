@@ -161,7 +161,7 @@ int emummc_storage_init_mmc(sdmmc_storage_t *storage, sdmmc_t *sdmmc)
 		strcat(emu_cfg.emummc_file_based_path, "/00");
 		if (f_stat(emu_cfg.emummc_file_based_path, &fno))
 		{
-			EPRINTF("emuMMC rawnand konnte nicht geoeffnet werden.");
+			EPRINTF("emuMMC RAWNAND konnte nicht geoeffnet werden.");
 			goto out;
 		}
 		emu_cfg.file_based_part_size = fno.fsize >> 9;

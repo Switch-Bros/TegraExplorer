@@ -20,8 +20,8 @@ MenuEntry_t FolderMenuEntries[] = {
     {.optionUnion = COLORTORGB(COLOR_VIOLET) | SKIPBIT}, // For the file Attribs
     {.optionUnion = HIDEBIT},
     {.optionUnion = COLORTORGB(COLOR_WHITE), .name = "<- Zurueck"},
-    {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "\nIn Zwischenablage kopieren"},
-    {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "In Zwischenablage verschieben"},
+    {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "\nKopiere in Zwischenablage"},
+    {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "Verschiebe in Zwischenablage"},
     {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "Aktuellen Ordner umbenennen\n"},
     {.optionUnion = COLORTORGB(COLOR_RED), .name = "Aktuellen Ordner loeschen"},
     {.optionUnion = COLORTORGB(COLOR_GREEN), .name = "\nOrdner erstellen"}

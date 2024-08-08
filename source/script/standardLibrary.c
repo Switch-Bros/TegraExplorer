@@ -46,6 +46,19 @@ ClassFunction(stdIf) {
 	return ret;
 }
 
+// Takes [int]. Returns empty.
+ClassFunction(stdSleep)
+{
+	s64 value = getIntValue(args[0]);
+
+	if (value)
+	{
+		msleep(value);
+	}
+
+	return &emptyClass;
+}
+
 // Takes [function, function]. Returns empty. Works by evaling the first function and running the 2nd if true.
 ClassFunction(stdWhile) {
 	Variable_t* result = eval(args[0]->function.function.operations.data, args[0]->function.function.operations.count, 1);
@@ -234,13 +247,8 @@ char *powNames[] = {
 	"volminus",
 };
 
-// Takes [int]. Returns dict[a,b,x,y,down,up,right,left,power,volplus,volminus,raw]. int: mask for hidWaitMask 
-ClassFunction(stdPauseMask){
+Variable_t *hidToVar(u32 raw){
 	Variable_t ret = {.variableType = DictionaryClass, .dictionary.vector = newVec(sizeof(Dict_t), 9)};
-	Input_t *i = hidWaitMask((u32)getIntValue(*args));
-	
-	u32 raw = i->buttons;
-
 	addIntToDict(&ret, "raw", raw);
 
 	for (int i = 0; i < ARRAY_SIZE(abxyNames); i++){
@@ -263,6 +271,19 @@ ClassFunction(stdPauseMask){
 	}
 
 	return copyVariableToPtr(ret);
+}
+
+ClassFunction(stdRead){
+	Input_t *i = hidRead();
+	u32 raw = i->buttons;
+	return hidToVar(raw); 
+}
+
+// Takes [int]. Returns dict[a,b,x,y,down,up,right,left,power,volplus,volminus,raw]. int: mask for hidWaitMask 
+ClassFunction(stdPauseMask){
+	Input_t *i = hidWaitMask((u32)getIntValue(*args));
+	u32 raw = i->buttons;
+	return hidToVar(raw);
 }
 
 // Takes none. Returns dict (same as stdPauseMask). 
@@ -406,6 +427,16 @@ ClassFunction(stdFileRead){
 	return copyVariableToPtr(v);
 }
 
+ClassFunction(stdFileReadSize) {
+	u32 fSize = 0;
+	u8* buff = sd_file_read(args[0]->string.value, &fSize);
+	if (buff == NULL) {
+		SCRIPT_FATAL_ERR("Failed to read file");
+	}
+
+	return newIntVariablePtr(fSize);
+}
+
 ClassFunction(stdFileWrite){
 	return newIntVariablePtr(sd_save_to_file(args[1]->solvedArray.vector.data, args[1]->solvedArray.vector.count, args[0]->string.value));	
 }
@@ -497,6 +528,7 @@ STUBBED(stdMkdir)
 STUBBED(stdGetMemUsage)
 STUBBED(stdGetNcaType)
 STUBBED(stdPause)
+STUBBED(stdRead)
 STUBBED(stdPauseMask)
 STUBBED(stdColor)
 STUBBED(stdMenuFull)
@@ -515,6 +547,7 @@ STUBBED(stdFileMove)
 STUBBED(stdLaunchPayload)
 STUBBED(stdFileWrite)
 STUBBED(stdFileRead)
+STUBBED(stdFileReadSize)
 STUBBED(stdCombinePaths)
 STUBBED(stdEmmcFileWrite)
 STUBBED(stdEmmcFileRead)
@@ -559,10 +592,12 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	{"timer", stdGetMs, 0, 0},
 	{"pause", stdPauseMask, 1, threeIntsStd},
 	{"pause", stdPause, 0, 0},
+	{"hidread", stdRead, 0, 0},
 	{"color", stdColor, 1, threeIntsStd},
 	{"menu", stdMenuFull, 3, menuArgsStd},
 	{"menu", stdMenuFull, 2, menuArgsStd},
 	{"power", stdPower, 1, threeIntsStd},
+	{"sleep", stdSleep, 1, threeIntsStd},
 
 	// System
 	{"mountsys", stdMountSysmmc, 1, twoStringArgStd},
@@ -591,6 +626,7 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	{"movefile", stdFileMove, 2, twoStringArgStd},
 	{"delfile", stdFileDel, 1, twoStringArgStd},
 	{"readfile", stdFileRead, 1, twoStringArgStd},
+	{"getfilesize", stdFileReadSize, 1, twoStringArgStd},
 	{"writefile", stdFileWrite, 2, oneStringOneByteArrayStd},
 	
 	// 	Utils
