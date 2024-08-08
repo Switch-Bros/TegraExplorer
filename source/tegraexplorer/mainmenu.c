@@ -58,7 +58,7 @@ enum {
 MenuEntry_t mainMenuEntries[] = {
     #ifndef SCRIPT_ONLY
     [MainExplore] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "-- Explorer --"},
-    [MainBrowseSd] = {.optionUnion = COLORTORGB(COLOR_GREEN), .name = "SD durchsuchen"},
+    [MainBrowseSd] = {.optionUnion = COLORTORGB(COLOR_GREEN), .name = "SD-Karte durchsuchen"},
     [MainMountSd] = {.optionUnion = COLORTORGB(COLOR_YELLOW)}, // To mount/unmount the SD
     [MainBrowseEmmc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "EMMC durchsuchen"},
     [MainBrowseEmummc] = {.optionUnion = COLORTORGB(COLOR_BLUE), .name = "emuMMC durchsuchen"},
@@ -118,7 +118,7 @@ void ViewKeys(){
             fuseCount++;
     }
 
-    gfx_printf("\n\nPkg1 ID: '%s' (kb %d)\nFuse Zaehler: %d", TConf.pkg1ID, TConf.pkg1ver, fuseCount);
+    gfx_printf("\n\nPkg1 ID: '%s'\nFuse Zaehler: %d", TConf.pkg1ID, fuseCount);
 
     hidWait();
 }
@@ -184,7 +184,7 @@ void EnterMainMenu(){
         #ifndef SCRIPT_ONLY
         // -- Explore --
         mainMenuEntries[MainBrowseSd].hide = !sd_mounted;
-        mainMenuEntries[MainMountSd].name = (sd_mounted) ? "SD auswerfen" : "SD einbinden";
+        mainMenuEntries[MainMountSd].name = (sd_mounted) ? "SD-Karte auswerfen" : "SD-Karte einbinden";
         mainMenuEntries[MainBrowseEmummc].hide = (!emu_cfg.enabled || !sd_mounted);
 
         // -- Tools --
