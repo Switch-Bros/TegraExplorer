@@ -11,7 +11,7 @@ include $(DEVKITARM)/base_rules
 IPL_LOAD_ADDR := 0x40008000
 LPVERSION_MAJOR := 4
 LPVERSION_MINOR := 2
-LPVERSION_BUGFX := 1
+LPVERSION_BUGFX := 0
 LPVERSION := \"$(LPVERSION_MAJOR).$(LPVERSION_MINOR).$(LPVERSION_BUGFX)\"
 
 ################################################################################
@@ -116,9 +116,9 @@ $(BUILDDIR)/$(TARGET)/script/builtin.c: scripts/*.te
 	@mkdir -p "$(@D)"
 	@mkdir -p "$(BUILDDIR)/$(TARGET)/scripts"
 ifeq ($(OS),Windows_NT)
-	@py ts-minifier.py -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
+	@py ts-minifier.py --such-meme -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
 	@py te2c.py "$(BUILDDIR)/$(TARGET)/script/builtin" "$(BUILDDIR)/$(TARGET)/scripts"
 else
-	@python3 ts-minifier.py -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
+	@python3 ts-minifier.py --such-meme -d "$(BUILDDIR)/$(TARGET)/scripts" $(wildcard scripts/*.te)
 	@python3 te2c.py "$(BUILDDIR)/$(TARGET)/script/builtin" "$(BUILDDIR)/$(TARGET)/scripts"
 endif
