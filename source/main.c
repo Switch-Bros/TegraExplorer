@@ -280,30 +280,23 @@ void ipl_main()
 	gfx_clearscreen();
 
 	int res = -1;
-	const char *prod_key_path = "sd:/atmosphere/automatic_backups/dumps/prod.keys";
-	if (!FileExists(prod_key_path))
-		prod_key_path = "sd:/switch/prod.keys";
 
-	if (FileExists(prod_key_path)) {
-		if (btn_read() & BTN_VOL_DOWN || DumpKeys())
-			res = GetKeysFromFile(prod_key_path);
-	}
+	if (btn_read() & BTN_VOL_DOWN || DumpKeys())
+		res = GetKeysFromFile("sd:/switch/prod.keys");
 
-	TConf.keysDumped = (res == 0) ? 1 : 0;
+	TConf.keysDumped = (res > 0) ? 0 : 1;
+
+	if (res > 0)
+		DrawError(newErrCode(TE_ERR_KEYDUMP_FAIL));
+	
 	if (TConf.keysDumped)
 		SetKeySlots();
-
+	
 	if (res == 0)
 		hidWait();
-	else
-		DrawError(newErrCode(TE_ERR_KEYDUMP_FAIL));
 
 	if (FileExists("sd:/SwitchBros_BasisPaket/switch/switchbros-updater/update.te"))
 		RunScript("sd:/SwitchBros_BasisPaket/switch/switchbros-updater", newFSEntry("update.te"));
-	else if (FileExists("sd:/switch/switchbros-updater/update.te"))
-		RunScript("sd:/switch/switchbros-updater", newFSEntry("update.te"));
-  	else if (FileExists("sd:/SwitchBros_BasisPaket/switch/switchbrosupdater/startup.te"))
-  		RunScript("sd:/SwitchBros_BasisPaket/switch/switchbrosupdater", newFSEntry("startup.te"));
 	else if (FileExists("sd:/startup.te"))
 		RunScript("sd:/", newFSEntry("startup.te"));
 	gfx_printf("\n\nStartup script nicht gefunden.\nBitte downloade das SwitchBros_BasisPaket neu herunter und installiere es manuell\n\nPower-Taste druecken fuer Neustart...");

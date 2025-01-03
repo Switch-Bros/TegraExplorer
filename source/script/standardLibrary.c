@@ -376,21 +376,6 @@ ClassFunction(stdClear){
 	return &emptyClass;
 }
 
-ClassFunction(stdFixAttributes){
-	m_entry_fixArchiveBit(0);
-	return &emptyClass;
-}
-
-ClassFunction(stdRemoveMacFolders){
-	m_entry_fixMacSpecialFolders(0);
-	return &emptyClass;
-}
-
-ClassFunction(stdDisableSysmodules){
-	m_entry_deleteBootFlags(0);
-	return &emptyClass;
-}
-
 ClassFunction(stdRmDir){
 	return newIntVariablePtr(FolderDelete(args[0]->string.value).err);
 }
@@ -431,7 +416,7 @@ ClassFunction(stdFileReadSize) {
 	u32 fSize = 0;
 	u8* buff = sd_file_read(args[0]->string.value, &fSize);
 	if (buff == NULL) {
-		SCRIPT_FATAL_ERR("Failed to read file");
+		SCRIPT_FATAL_ERR("Datei konnte nicht gelesen werden");
 	}
 
 	return newIntVariablePtr(fSize);
@@ -536,9 +521,6 @@ STUBBED(stdMountEmummc)
 STUBBED(stdHasEmu)
 STUBBED(stdGetMs)
 STUBBED(stdClear)
-STUBBED(stdFixAttributes)
-STUBBED(stdRemoveMacFolders)
-STUBBED(stdDisableSysmodules)
 STUBBED(stdRmDir)
 STUBBED(stdFileExists)
 STUBBED(stdFileDel)
@@ -609,10 +591,6 @@ ClassFunctionTableEntry_t standardFunctionDefenitions[] = {
 	{"emummcwrite", stdEmummcFileWrite, 2, twoStringArgStd},
 	{"fuse_patched", stdIsPatched, 0, 0},
 	{"fuse_hwtype", stdHwType, 0, 0},
-	{"fixattrib", stdFixAttributes, 0, 0},
-	{"removemacfolders", stdRemoveMacFolders, 0, 0},
-	{"disablemodules", stdDisableSysmodules, 0, 0},
-
 
 	// FileSystem
 	// 	Dir

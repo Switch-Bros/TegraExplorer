@@ -82,7 +82,7 @@ void FormatSD(){
 	res = f_fdisk_mod(0, plist, work);
 
 	if (!res){
-		res = f_mkfs("SD:", FM_FAT32, 32768, work, TConf.FSBuffSize);
+		res = f_mkfs("SD-Karte:", FM_FAT32, 32768, work, TConf.FSBuffSize);
 	}
 
 	sd_unmount();
