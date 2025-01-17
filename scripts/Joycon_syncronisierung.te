@@ -1,10 +1,8 @@
-BLAU = 0x0000FF
 GELB = 0xFDE100
 ROT = 0xFF0000
 GRUEN = 0x00FF00
 WEISS = 0xFFFFFF
 ORANGE = 0xFFA500
-LILA = 0x8F00FF
 
 p=println
 pe={pause() exit()}
@@ -32,7 +30,7 @@ color(WEISS);
 p();
 p("Druecke X um WiFi und Blueooth Einstellungen vom sysMMC zum emuMMC zu kopieren");
 p();
-color(ORANGE);
+color(GELB);
 p("Beliebige andere Taste zum verlassen");
 p();
 
@@ -54,7 +52,7 @@ p("Sichere sysMMC Datei: 8000000000000050 nach sd:/tegraexplorer/syncfix/backup"
 copyfile("bis:/save/8000000000000050", "sd:/tegraexplorer/syncfix/backup/8000000000000050_sysmmc_backup");
 
 
-color(LILA);
+color(WEISS);
 p("Einbinden vom emuMMC");
 if(mountemu("SYSTEM")){p("System konnte nicht eingebunden werden!")pe()}
 p("Sichere emuMMC Datei: 8000000000000050 nach sd:/tegraexplorer/syncfix/backup");
