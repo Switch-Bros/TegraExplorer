@@ -73,7 +73,7 @@ void DeleteFile(char *path, FSEntry_t entry){
 }
 
 void RunScriptString(char *str, u32 size){
-    TConf.scriptCWD = "sd:/";
+    TConf.scriptCWD = "SD:/";
     gfx_clearscreen();
     ParserRet_t ret = parseScript(str, size);
     setStaticVars(&ret.staticVarHolder);

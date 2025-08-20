@@ -73,7 +73,7 @@ MenuEntry_t mainMenuEntries[] = {
     [MainReloadTE] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "TegraExplorer neu laden"},
     [MainPowerOff] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Ausschalten"},
     [MainRebootRCM] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in RCM Modus"},
-    [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "normaler Neustart"},
+    [MainRebootNormal] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in OFW"},
     [MainRebootHekate] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in hekate"},
     [MainRebootAMS] = {.optionUnion = COLORTORGB(COLOR_VIOLET), .name = "Neustart in atmosphere"},
     [MainScripts] = {.optionUnion = COLORTORGB(COLOR_WHITE) | SKIPBIT, .name = "\n-- Scripte --"}
@@ -87,7 +87,7 @@ void HandleSD(){
         hidWait();
     }
     else
-        FileExplorer("sd:/");
+        FileExplorer("SD:/");
 }
 
 void HandleEMMC(){
@@ -109,7 +109,7 @@ void ViewKeys(){
     PrintKey(dumpedKeys.master_key, AES_128_KEY_SIZE);
     gfx_printf("\nHeader key:   ");
     PrintKey(dumpedKeys.header_key, AES_128_KEY_SIZE * 2);
-    gfx_printf("\nSichere mac key: ");
+    gfx_printf("\nSichere MAC key: ");
     PrintKey(dumpedKeys.save_mac_key, AES_128_KEY_SIZE);
 
     u8 fuseCount = 0;
