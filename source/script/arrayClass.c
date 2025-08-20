@@ -90,7 +90,7 @@ ClassFunction(getArrayIdx) {
 	s64 getVal = (*args)->integer.value;
 	// Out of bounds
 	if (getVal < 0 || getVal >= caller->solvedArray.vector.count) {
-		SCRIPT_FATAL_ERR("Accessing index %d while array is %d long", (int)getVal, (int)caller->solvedArray.vector.count);
+		SCRIPT_FATAL_ERR("Du greifst auf Index %d zu, waehrend das Array nur %d lang ist", (int)getVal, (int)caller->solvedArray.vector.count);
 	}
 
 	Variable_t a = arrayClassGetIdx(caller, getVal);
@@ -108,7 +108,7 @@ ClassFunction(arraySlice) {
 	s64 takeAmount = getIntValue(args[1]);
 
 	if (caller->solvedArray.vector.count < (skipAmount + takeAmount)  || skipAmount < 0 || takeAmount <= 0) {
-		SCRIPT_FATAL_ERR("Slicing out of range of array with len %d", (int)caller->solvedArray.vector.count);
+		SCRIPT_FATAL_ERR("Du schneidest einen Bereich ausserhalb des Arrays mit der Laenge %d aus", (int)caller->solvedArray.vector.count);
 	}
 		
 	Variable_t refSkip = { .variableType = SolvedArrayReferenceClass };
@@ -161,13 +161,13 @@ ClassFunction(arraySet) {
 	s64 idx = getIntValue(*args);
 	Vector_t* v = &caller->solvedArray.vector;
 	if (v->count < idx || idx < 0) {
-		SCRIPT_FATAL_ERR("Accessing index %d while array is %d long", (int)idx, (int)caller->solvedArray.vector.count);
+		SCRIPT_FATAL_ERR("Du greifst auf Index %d zu, waehrend das Array nur %d lang ist", (int)idx, (int)caller->solvedArray.vector.count);
 	}
 
 	u32 oldCount = caller->solvedArray.vector.count;
 	caller->solvedArray.vector.count = idx;
 	if (arrayClassAdd(caller, args[1])){
-		SCRIPT_FATAL_ERR("Adding the wrong type to a typed array");
+		SCRIPT_FATAL_ERR("Du fuegst den falschen Typ zu einem typisierten Array hinzu");
 	}
 	caller->solvedArray.vector.count = oldCount;
 
@@ -178,11 +178,11 @@ ClassFunction(arrayAdd) {
 	Variable_t* arg = *args;
 
 	if (caller->readOnly) {
-		SCRIPT_FATAL_ERR("Array is read-only");
+		SCRIPT_FATAL_ERR("Array ist Nur-Lesen");
 	}
 
 	if (arrayClassAdd(caller, arg)){
-		SCRIPT_FATAL_ERR("Adding the wrong type to a typed array");
+		SCRIPT_FATAL_ERR("Du fuegst den falschen Typ zu einem typisierten Array hinzu");
 	}
 
 	return &emptyClass;
@@ -192,11 +192,11 @@ ClassFunction(arrayAddRange) {
 	Variable_t* arg = *args;
 
 	if (caller->readOnly) {
-		SCRIPT_FATAL_ERR("Array is read-only");
+		SCRIPT_FATAL_ERR("Array ist Nur-Lesen");
 	}
 
 	if (arrayClassAddRange(caller, arg)) {
-		SCRIPT_FATAL_ERR("Adding the wrong type to a typed array");
+		SCRIPT_FATAL_ERR("Du fuegst den falschen Typ zu einem typisierten Array hinzu");
 	}
 
 	return &emptyClass;
@@ -210,7 +210,7 @@ ClassFunction(arrayContains) {
 		Variable_t iter = arrayClassGetIdx(caller, i);
 
 		if (iter.variableType != arg->variableType){
-			SCRIPT_FATAL_ERR("type of contains does not match");
+			SCRIPT_FATAL_ERR("Der Typ fuer die 'contains'-Operation passt nicht");
 		}
 	
 		if (caller->variableType == StringArrayClass) {
@@ -230,7 +230,7 @@ ClassFunction(arrayMinus) {
 	s64 count = getIntValue(*args);
 	Vector_t* v = &caller->solvedArray.vector;
 	if (v->count < count || count <= 0) {
-		SCRIPT_FATAL_ERR("Accessing index %d while array is %d long", (int)count, (int)caller->solvedArray.vector.count);
+		SCRIPT_FATAL_ERR("Du greifst auf Index %d zu, waehrend das Array nur %d lang ist", (int)count, (int)caller->solvedArray.vector.count);
 	}
 
 	if (caller->variableType == StringArrayClass) {
@@ -246,7 +246,7 @@ ClassFunction(arrayMinus) {
 
 ClassFunction(bytesToStr) {
 	if (caller->variableType != ByteArrayClass) {
-		SCRIPT_FATAL_ERR("Need a bytearray to convert to str");
+		SCRIPT_FATAL_ERR("Ein Byte-Array wird benoetigt, um es in einen String umzuwandeln");
 	}
 
 	char* buff = malloc(caller->solvedArray.vector.count + 1);

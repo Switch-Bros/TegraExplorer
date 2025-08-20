@@ -149,7 +149,7 @@ ClassFunction(stdMountSysmmc){
 
 ClassFunction(stdMountEmummc){
 	if (!emu_cfg.enabled){
-		SCRIPT_FATAL_ERR("emummc is not enabled");
+		SCRIPT_FATAL_ERR("emuMMC ist nicht aktiviert");
 	}
 
 	return newIntVariablePtr(mountMmc(MMC_CONN_EMUMMC, args[0]->string.value));
@@ -194,7 +194,7 @@ ClassFunction(stdSetPrintPos){
 ClassFunction(stdReadDir){
 	Variable_t* resPtr = newIntVariablePtr(0);
 	Variable_t ret = {.variableType = DictionaryClass, .dictionary.vector = newVec(sizeof(Dict_t), 4)};
-	addVariableToDict(&ret, "result", resPtr);
+	addVariableToDict(&ret, "Ergebnis", resPtr);
 
 	Variable_t fileNamesArray = {.variableType = StringArrayClass, .solvedArray.vector = newVec(sizeof(char*), 0)};
 	Variable_t dirNamesArray = {.variableType = StringArrayClass, .solvedArray.vector = newVec(sizeof(char*), 0)};
@@ -220,9 +220,9 @@ ClassFunction(stdReadDir){
 
 	f_closedir(&dir);
 
-	addVariableToDict(&ret, "files", copyVariableToPtr(fileNamesArray));
-	addVariableToDict(&ret, "folders", copyVariableToPtr(dirNamesArray));
-	addVariableToDict(&ret, "fileSizes", copyVariableToPtr(fileSizeArray));
+	addVariableToDict(&ret, "Dateien", copyVariableToPtr(fileNamesArray));
+	addVariableToDict(&ret, "Ordner", copyVariableToPtr(dirNamesArray));
+	addVariableToDict(&ret, "Dateigroesse", copyVariableToPtr(fileSizeArray));
 	
 	return copyVariableToPtr(ret);
 }
@@ -235,21 +235,21 @@ char *abxyNames[] = {
 };
 
 char *ulrdNames[] = {
-	"down",
-	"up",
-	"right",
-	"left",
+	"runter",
+	"hoch",
+	"rechts",
+	"links",
 };
 
 char *powNames[] = {
-	"power",
-	"volplus",
-	"volminus",
+	"Power",
+	"VolPlus",
+	"VolMinus",
 };
 
 Variable_t *hidToVar(u32 raw){
 	Variable_t ret = {.variableType = DictionaryClass, .dictionary.vector = newVec(sizeof(Dict_t), 9)};
-	addIntToDict(&ret, "raw", raw);
+	addIntToDict(&ret, "RAW", raw);
 
 	for (int i = 0; i < ARRAY_SIZE(abxyNames); i++){
 		addIntToDict(&ret, abxyNames[i], raw & 0x1);
@@ -307,8 +307,8 @@ ClassFunction(stdMkdir){
 ClassFunction(stdGetMemUsage){
 	heap_monitor_t mon;
 	heap_monitor(&mon, false);
-	Dict_t a = {.name = CpyStr("used"), .var = newIntVariablePtr((s64)mon.used)};
-	Dict_t b = {.name = CpyStr("total"), .var = newIntVariablePtr((s64)mon.total)};
+	Dict_t a = {.name = CpyStr("benutzt"), .var = newIntVariablePtr((s64)mon.used)};
+	Dict_t b = {.name = CpyStr("gesamt"), .var = newIntVariablePtr((s64)mon.total)};
 	Variable_t ret = {.variableType = DictionaryClass, .dictionary.vector = newVec(sizeof(Dict_t), 2)};
 	vecAdd(&ret.dictionary.vector, a);
 	vecAdd(&ret.dictionary.vector, b);
@@ -331,7 +331,7 @@ ClassFunction(stdGetNcaType){
 ClassFunction(stdMenuFull){
 	if (argsLen > 2){
 		if (args[2]->solvedArray.vector.count < args[0]->solvedArray.vector.count){
-			SCRIPT_FATAL_ERR("invalid menu args");
+			SCRIPT_FATAL_ERR("Ungueltige Menue-Argumente");
 		}
 	}
 
@@ -462,14 +462,14 @@ ClassFunction(stdEmummcFileWrite){
 
 ClassFunction(stdCombinePaths){
 	if (argsLen < 2 || args[0]->variableType != StringClass){
-		SCRIPT_FATAL_ERR("stdCombinePaths needs 2+ args");
+		SCRIPT_FATAL_ERR("stdCombinePaths benoetigt 2+ Argumente");
 	}
 
 	char *res = CpyStr(args[0]->string.value);
 
 	for (int i = 1; i < argsLen; i++){
 		if (args[i]->variableType != StringClass){
-			SCRIPT_FATAL_ERR("stdCombinePaths needs 2+ args");
+			SCRIPT_FATAL_ERR("stdCombinePaths benoetigt 2+ Argumente");
 		}
 
 		char *temp = CombinePaths(res, args[i]->string.value);

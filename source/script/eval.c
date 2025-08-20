@@ -96,7 +96,7 @@ Variable_t* opToVar(Operator_t* op, Callback_SetVar_t *setCallback, u8 possibleC
 			}
 
 			if (var == NULL) {
-				SCRIPT_FATAL_ERR("Variable '%s' not found", op->variable.name);
+				SCRIPT_FATAL_ERR("Variable '%s' nicht gefunden", op->variable.name);
 			}
 
 			addPendingReference(var);
@@ -116,7 +116,7 @@ Variable_t* opToVar(Operator_t* op, Callback_SetVar_t *setCallback, u8 possibleC
 		}
 		else if (args->action == ActionSet) {
 			if (var->readOnly) {
-				SCRIPT_FATAL_ERR("Variable which set was called on is read-only");
+				SCRIPT_FATAL_ERR("Die Variable, der ein Wert zugewiesen werden soll, ist schreibgeschuetzt");
 				return NULL;
 			}
 
@@ -131,7 +131,7 @@ Variable_t* opToVar(Operator_t* op, Callback_SetVar_t *setCallback, u8 possibleC
 				}
 			}
 			else {
-				SCRIPT_FATAL_ERR("Unexpected set!");
+				SCRIPT_FATAL_ERR("Unerwartete Zuweisung!");
 			}
 			return NULL;
 		}
@@ -221,7 +221,7 @@ Variable_t* eval(Operator_t* ops, u32 len, u8 ret) {
 
 		if (curRes == NULL) {
 			if (cur->token != Variable && cur->token != BetweenBrackets) {
-				SCRIPT_FATAL_ERR("First token is not a variable");
+				SCRIPT_FATAL_ERR("Ersteer Token ist keine Variable");
 			}
 			else {
 				curRes = opToVar(cur, &set, (len - i) > 1);
@@ -241,7 +241,7 @@ Variable_t* eval(Operator_t* ops, u32 len, u8 ret) {
 				curOp = cur;
 			}
 			else {
-				SCRIPT_FATAL_ERR("Expected operator");
+				SCRIPT_FATAL_ERR("Operator erwartet");
 			}
 			continue;
 		}

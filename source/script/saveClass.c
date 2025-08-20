@@ -46,7 +46,7 @@ ClassFunction(writeFile){
 ClassFunction(getFiles){
     Variable_t* resPtr = newIntVariablePtr(0);
 	Variable_t ret = {.variableType = DictionaryClass, .dictionary.vector = newVec(sizeof(Dict_t), 4)};
-	addVariableToDict(&ret, "result", resPtr);
+	addVariableToDict(&ret, "Ergebnis", resPtr);
 
     save_data_directory_ctx_t ctx;
     if (!save_open_directory(&caller->save->saveCtx, &ctx, "/", OPEN_DIR_MODE_ALL)){
@@ -86,9 +86,9 @@ ClassFunction(getFiles){
 
     free(entries);
 
-	addVariableToDict(&ret, "files", copyVariableToPtr(fileNamesArray));
-	addVariableToDict(&ret, "folders", copyVariableToPtr(dirNamesArray));
-	addVariableToDict(&ret, "fileSizes", copyVariableToPtr(fileSizeArray));
+	addVariableToDict(&ret, "Dateien", copyVariableToPtr(fileNamesArray));
+	addVariableToDict(&ret, "Ordner", copyVariableToPtr(dirNamesArray));
+	addVariableToDict(&ret, "Dateigroesse", copyVariableToPtr(fileSizeArray));
 	
 	return copyVariableToPtr(ret);
 }

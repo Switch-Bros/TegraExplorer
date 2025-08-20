@@ -55,14 +55,14 @@ Variable_t* genericGet(Variable_t* var, CallArgs_t* ref) {
 			}
 		}
 
-		SCRIPT_FATAL_ERR("Did not find member '%s'", ref->extra);
+		SCRIPT_FATAL_ERR("Mitglied '%s' wurde nicht gefunden", ref->extra);
 	}
 	else if (ref->extraAction == ActionExtraArrayIndex) {
 		Function_t* idx = ref->extra;
 		Variable_t *solvedIdx = eval(idx->operations.data, idx->operations.count, 1);
 		
 		if (solvedIdx->variableType != IntClass) {
-			SCRIPT_FATAL_ERR("Index is not an integer");
+			SCRIPT_FATAL_ERR("Index ist kein Integer");
 		}
 			
 		Variable_t* res = callMemberFunctionDirect(var, "get", &solvedIdx, 1);
@@ -75,7 +75,7 @@ Variable_t* genericGet(Variable_t* var, CallArgs_t* ref) {
 
 Variable_t* genericCallDirect(Variable_t* var, Variable_t** args, u8 len) {
 	if (var->variableType != FunctionClass){
-		SCRIPT_FATAL_ERR("Call on non function class");
+		SCRIPT_FATAL_ERR("Aufruf einer Nicht-Funktions-Klasse");
 	}
 
 	if (var->function.builtIn) {
@@ -105,12 +105,12 @@ Variable_t* genericCallDirect(Variable_t* var, Variable_t** args, u8 len) {
 		return &emptyClass;
 	}
 
-	SCRIPT_FATAL_ERR("Arguments do not match function defenition(s)");
+	SCRIPT_FATAL_ERR("Die Argumente passen nicht zu den Funktionsdefinition(en)");
 }
 
 Variable_t* genericCall(Variable_t* var, CallArgs_t* ref) {
 	if (var->variableType != FunctionClass){
-		SCRIPT_FATAL_ERR("Call on non function class");
+		SCRIPT_FATAL_ERR("Aufruf einer Nicht-Funktions-Klasse");
 	}
 	Function_t* f = ref->extra;
 	if (var->function.builtIn) {
@@ -165,7 +165,7 @@ Variable_t* genericCall(Variable_t* var, CallArgs_t* ref) {
 			if (!tooManyArgs)
 				res = genericCallDirect(var, argsHolder, argCount);
 			else {
-				SCRIPT_FATAL_ERR("Too many args provided (got more than %d)", argCount);
+				SCRIPT_FATAL_ERR("Zu viele Argumente angegeben (mehr als %d erhalten)", argCount);
 			}
 				
 
@@ -218,7 +218,7 @@ Variable_t* callMemberFunction(Variable_t* var, char* memberName, CallArgs_t* ar
 		if (var->variableType == memberGetters[i].classType) {
 			Variable_t funcRef = memberGetters[i].func(var, memberName);
 			if (funcRef.variableType == None) {
-				SCRIPT_FATAL_ERR("Did not find member '%s'", memberName);
+				SCRIPT_FATAL_ERR("Mitglied '%s' wurde nicht gefunden", memberName);
 			}
 
 			Variable_t* ptr = &funcRef;
@@ -230,7 +230,7 @@ Variable_t* callMemberFunction(Variable_t* var, char* memberName, CallArgs_t* ar
 		}
 	}
 
-	SCRIPT_FATAL_ERR("Could not find function table for given type");
+	SCRIPT_FATAL_ERR("Funktionstabelle fuer den angegebenen Typ konnte nicht gefunden werden");
 }
 
 Variable_t* callMemberFunctionDirect(Variable_t* var, char* memberName, Variable_t** args, u8 argsLen) {
@@ -238,7 +238,7 @@ Variable_t* callMemberFunctionDirect(Variable_t* var, char* memberName, Variable
 		if (var->variableType == memberGetters[i].classType) {
 			Variable_t funcRef = memberGetters[i].func(var, memberName);
 			if (funcRef.variableType == None) {
-				SCRIPT_FATAL_ERR("Did not find member '%s'", memberName);
+				SCRIPT_FATAL_ERR("Mitglied '%s' wurde nicht gefunden", memberName);
 			}
 
 			Variable_t* ptr = &funcRef;
@@ -250,7 +250,7 @@ Variable_t* callMemberFunctionDirect(Variable_t* var, char* memberName, Variable
 		}
 	}
 
-	SCRIPT_FATAL_ERR("Could not find function table for given type");
+	SCRIPT_FATAL_ERR("Funktionstabelle fuer den angegebenen Typ konnte nicht gefunden werden");
 }
 
 void freeVariableInternal(Variable_t* referencedTarget) {

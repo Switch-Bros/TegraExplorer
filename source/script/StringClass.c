@@ -63,7 +63,7 @@ ClassFunction(stringIndexGet) {
 	u32 len = strlen(caller->string.value);
 	u32 idx = args[0]->integer.value;
 	if (len < idx || idx < 0) {
-		SCRIPT_FATAL_ERR("Index of string out of range");
+		SCRIPT_FATAL_ERR("String-Index ausserhalb des Bereichs");
 	}
 
 	char* a = calloc(1,2);
@@ -74,7 +74,7 @@ ClassFunction(stringIndexGet) {
 ClassFunction(stringMinusInt){
 	u32 baseStrLen = strlen(caller->string.value);
 	if (baseStrLen < args[0]->integer.value){
-		SCRIPT_FATAL_ERR("Index of string out of range");
+		SCRIPT_FATAL_ERR("String-Index ausserhalb des Bereichs");
 	}
 	char* newStr = calloc(baseStrLen - args[0]->integer.value + 1, 1);
 	memcpy(newStr, caller->string.value, baseStrLen - args[0]->integer.value);

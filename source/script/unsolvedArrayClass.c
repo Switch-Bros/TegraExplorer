@@ -37,7 +37,7 @@ Variable_t* solveArray(Variable_t *unsolvedArray) {
 						type = StringClass;
 					}
 					else {
-						SCRIPT_FATAL_ERR("Unknown array type");
+						SCRIPT_FATAL_ERR("Unbekannter Array Typ");
 					}
 				}
 
@@ -51,7 +51,7 @@ Variable_t* solveArray(Variable_t *unsolvedArray) {
 					}
 				}
 				else {
-					SCRIPT_FATAL_ERR("Variable type is not the same as array type");
+					SCRIPT_FATAL_ERR("Variablen-Typ ist nicht der gleiche wie der Array-Typ");
 				}
 
 				removePendingReference(var);
