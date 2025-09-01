@@ -1,3 +1,5 @@
+#REQUIRE KEYS
+#REQUIRE SD
 p=println
 pe={pause() exit()}
 
